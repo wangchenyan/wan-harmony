@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
-import { Response } from './Model';
+import { Article, ArticleList, Response } from './Model';
 
 let TAG = "Api"
 let BASE_URL: string = "https://www.wanandroid.com"
@@ -15,26 +15,34 @@ function request(path: string, method: http.RequestMethod, callback: (Response) 
       expectDataType: http.HttpDataType.OBJECT,
     },
     (err, data) => {
-      let resp = new Response()
+      let res = new Response()
       if (!err && data.responseCode === 200) {
-        Object.assign(resp, data.result)
-        hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(resp)}`)
+        Object.assign(res, data.result)
+        hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
       } else {
         hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
-        resp.errorCode = data.responseCode
-        resp.errorMsg = err.message
+        res.errorCode = data.responseCode
+        res.errorMsg = err.message
       }
-      callback(resp)
+      callback(res)
     }
   )
 }
 
+function requestSync<T>(path: string, method: http.RequestMethod): Promise<Response<T>> {
+  return new Promise<Response<T>>((resolve, reject) => {
+    request(path, method, (res) => {
+      resolve(res)
+    })
+  })
+}
+
 export class Api {
-  getHomeArticleList(page: number, callback: (Response) => void) {
-    request(`/article/list/${page}/json`, http.RequestMethod.GET, callback)
+  getHomeArticleList(page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET)
   }
 
-  getStickyArticle(callback: (Response) => void) {
-    request("/article/top/json", http.RequestMethod.GET, callback)
+  getStickyArticle(): Promise<Response<Array<Article>>> {
+    return requestSync("/article/top/json", http.RequestMethod.GET)
   }
 }

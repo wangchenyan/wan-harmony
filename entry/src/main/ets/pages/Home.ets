@@ -1,63 +1,73 @@
 import hilog from '@ohos.hilog'
 import { Api } from '../net/Api'
-import {
-  Article,
-  ArticleList,
-  ArticleTag,
-  getArticleAuthor,
-  getArticleChapter,
-  getTagColor,
-  Response
-} from '../net/Model'
+import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, } from '../net/Model'
+import { LoadState, PageLoading } from '../widgets/PageLoading'
 
 @Component
 export struct Home {
-  private tag = "Home"
+  private TAG = "Home"
   @State articleList: Array<Article> = []
+  @State loadState: LoadState = LoadState.LOADING
 
-  aboutToAppear() {
-    hilog.info(0, this.tag, "aboutToAppear")
-    Api.prototype.getStickyArticle((resp: Response<Array<Article>>) => {
-      if (resp.isSuccessWithData()) {
-        let list = resp.data
-        list.forEach((item) => {
-          let tag = new ArticleTag()
-          tag.name = "置顶"
-          item.tags = [tag].concat(item.tags)
-        })
-        this.articleList = list.concat(this.articleList)
+  async aboutToAppear() {
+    hilog.info(0, this.TAG, "aboutToAppear")
+    this.loadData()
+  }
+
+  async loadData() {
+    this.loadState = LoadState.LOADING
+    let topRes = await Api.prototype.getStickyArticle()
+    let homeRes = await Api.prototype.getHomeArticleList(0)
+
+    if (topRes.isSuccessWithData() && homeRes.isSuccessWithData()) {
+      let list = []
+      topRes.data.forEach((item) => {
+        let tag = new ArticleTag()
+        tag.name = "置顶"
+        item.tags = [tag].concat(item.tags)
+        list.push(item)
+      })
+      list = list.concat(homeRes.data.datas)
+      this.articleList = list
+      if (list.length === 0) {
+        this.loadState = LoadState.EMPTY
       } else {
+        this.loadState = LoadState.SUCCESS
       }
-    })
-    Api.prototype.getHomeArticleList(0, (resp: Response<ArticleList>) => {
-      if (resp.isSuccessWithData()) {
-        this.articleList = this.articleList.concat(resp.data.datas)
-      } else {
-      }
-    })
+    } else {
+      this.loadState = LoadState.FAIL
+    }
   }
 
   build() {
-    Column() {
-      List() {
-        ForEach(this.articleList, (item: Article) => {
-          ListItem() {
-            this.ArticleItemBuilder(item)
-          }
+    PageLoading({
+      loadState: $loadState,
+      onReload: () => {
+        hilog.debug(0, this.TAG, "onReload")
+        this.loadData()
+      }
+    }) {
+      Column() {
+        List() {
+          ForEach(this.articleList, (item: Article) => {
+            ListItem() {
+              this.ArticleItemBuilder(item)
+            }
+          })
+        }
+        .width('100%')
+        .height('100%')
+        .listDirection(Axis.Vertical)
+        .divider({
+          strokeWidth: 0.5,
+          color: $r("app.color.divider"),
+          startMargin: 16,
+          endMargin: 16
         })
       }
       .width('100%')
       .height('100%')
-      .listDirection(Axis.Vertical)
-      .divider({
-        strokeWidth: 0.5,
-        color: $r("app.color.divider"),
-        startMargin: 16,
-        endMargin: 16
-      })
     }
-    .width('100%')
-    .height('100%')
   }
 
   @Builder
