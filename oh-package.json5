@@ -9,6 +9,7 @@
   "main": "",
   "version": "1.0.0",
   "dependencies": {
-    "@ohos/materialprogressbar": "^2.0.2"
+    "@ohos/materialprogressbar": "^2.0.2",
+    "@ohos/pulltorefresh": "2.0.1"
   }
 }

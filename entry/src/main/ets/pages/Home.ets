@@ -2,13 +2,14 @@ import hilog from '@ohos.hilog'
 import { Api } from '../net/Api'
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, HomeBannerData, } from '../net/Model'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
+import { PullToRefresh } from '@ohos/pulltorefresh'
 
 @Component
 export struct Home {
   private TAG = "Home"
-  private swiperController: SwiperController = new SwiperController()
-  @State bannerList: Array<HomeBannerData> = []
-  @State articleList: Array<Article> = []
+  private scroller: Scroller = new Scroller()
+  private page: number = 0
+  @State data: Array<object> = []
   @State loadState: LoadState = LoadState.LOADING
   @State bannerPosition: number = 0
 
@@ -19,29 +20,51 @@ export struct Home {
 
   async loadData() {
     this.loadState = LoadState.LOADING
-    let bannerRes = await Api.prototype.getHomeBanner()
-    let topRes = await Api.prototype.getStickyArticle()
-    let homeRes = await Api.prototype.getHomeArticleList(0)
-
-    if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && homeRes.isSuccessWithData()) {
-      let articleList = []
-      topRes.data.forEach((item) => {
-        let tag = new ArticleTag()
-        tag.name = "置顶"
-        item.tags = [tag].concat(item.tags)
-        articleList.push(item)
+    this.loadDataByPage(0).then(
+      (data) => {
+        this.data = data
+        if (this.data.length === 0) {
+          this.loadState = LoadState.EMPTY
+        } else {
+          this.loadState = LoadState.SUCCESS
+        }
+      },
+      (error) => {
+        this.loadState = LoadState.FAIL
       })
-      articleList = articleList.concat(homeRes.data.datas)
-      this.articleList = articleList
-      this.bannerList = bannerRes.data
-      if (this.articleList.length === 0 && this.bannerList.length === 0) {
-        this.loadState = LoadState.EMPTY
+  }
+
+  async loadDataByPage(page: number): Promise<Array<Object>> {
+    return new Promise<Array<Object>>(async (resolve, reject) => {
+      if (page === 0) {
+        let bannerRes = await Api.prototype.getHomeBanner()
+        let topRes = await Api.prototype.getStickyArticle()
+        let articleRes = await Api.prototype.getHomeArticleList(page)
+
+        if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
+          let bannerList = bannerRes.data
+          let articleList = []
+          topRes.data.forEach((item) => {
+            let tag = new ArticleTag()
+            tag.name = "置顶"
+            item.tags = [tag].concat(item.tags)
+            articleList.push(item)
+          })
+          articleList = articleList.concat(articleRes.data.datas)
+          let dataList = [bannerList].concat(articleList)
+          resolve(dataList)
+        } else {
+          reject()
+        }
       } else {
-        this.loadState = LoadState.SUCCESS
+        let articleRes = await Api.prototype.getHomeArticleList(page)
+        if (articleRes.isSuccessWithData()) {
+          resolve(articleRes.data.datas)
+        } else {
+          reject()
+        }
       }
-    } else {
-      this.loadState = LoadState.FAIL
-    }
+    })
   }
 
   build() {
@@ -53,25 +76,39 @@ export struct Home {
       }
     }) {
       Column() {
-        List() {
-          ListItem() {
-            this.BannerBuilder()
-          }
-
-          ForEach(this.articleList, (item: Article) => {
-            ListItem() {
-              this.ArticleItemBuilder(item)
-            }
-          })
-        }
-        .width('100%')
-        .height('100%')
-        .listDirection(Axis.Vertical)
-        .divider({
-          strokeWidth: 0.5,
-          color: $r("app.color.divider"),
-          startMargin: 16,
-          endMargin: 16
+        PullToRefresh({
+          data: $data,
+          scroller: this.scroller,
+          customList: this.ListViewBuilder,
+          onRefresh: () => {
+            return new Promise<string>((resolve, reject) => {
+              this.loadDataByPage(0).then(
+                (data) => {
+                  resolve('刷新成功');
+                  this.data = data
+                },
+                (error) => {
+                  resolve('刷新失败');
+                }
+              )
+            });
+          },
+          onLoadMore: () => {
+            return new Promise<string>((resolve, reject) => {
+              this.page++
+              this.loadDataByPage(this.page).then(
+                (data) => {
+                  resolve('加载成功');
+                  this.data = this.data.concat(data)
+                },
+                (error) => {
+                  resolve('加载失败');
+                }
+              )
+            });
+          },
+          customLoad: null,
+          customRefresh: null,
         })
       }
       .width('100%')
@@ -80,7 +117,42 @@ export struct Home {
   }
 
   @Builder
-  BannerBuilder() {
+  ListViewBuilder() {
+    List({ scroller: this.scroller }) {
+      ForEach(this.data, (item: object) => {
+        ListItem() {
+          if (item instanceof Array) {
+            BannerBuilder({
+              bannerList: item
+            })
+          } else {
+            ArticleItemBuilder({
+              article: item as Article
+            })
+          }
+        }
+      })
+    }
+    .width('100%')
+    .height('100%')
+    .listDirection(Axis.Vertical)
+    .divider({
+      strokeWidth: 0.5,
+      color: $r("app.color.divider"),
+      startMargin: 16,
+      endMargin: 16
+    })
+    .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+}
+
+@Component
+struct BannerBuilder {
+  private swiperController: SwiperController = new SwiperController()
+  @State private bannerPosition: number = 0
+  bannerList: Array<HomeBannerData>
+
+  build() {
     Stack() {
       Swiper(this.swiperController) {
         ForEach(this.bannerList, (item) => {
@@ -125,12 +197,16 @@ export struct Home {
 
     })
   }
+}
 
-  @Builder
-  ArticleItemBuilder(article: Article) {
+@Component
+struct ArticleItemBuilder {
+  article: Article
+
+  build() {
     Column() {
       Row() {
-        ForEach(article.tags, (item: ArticleTag) => {
+        ForEach(this.article.tags, (item: ArticleTag) => {
           Text(item.name)
             .fontColor(getTagColor(item))
             .fontSize(10)
@@ -149,7 +225,7 @@ export struct Home {
             .height(0)
             .color(Color.Transparent)
         })
-        Text(getArticleAuthor(article))
+        Text(getArticleAuthor(this.article))
           .layoutWeight(1)
           .fontColor($r("app.color.text_h1"))
           .fontSize(12)
@@ -157,7 +233,7 @@ export struct Home {
           .width(8)
           .height(0)
           .color(Color.Transparent)
-        Text(article.niceDate)
+        Text(this.article.niceDate)
           .fontColor($r("app.color.text_h2"))
           .fontSize(12)
       }
@@ -166,7 +242,7 @@ export struct Home {
         .width('100%')
         .height(4)
         .color(Color.Transparent)
-      Text(article.title)
+      Text(this.article.title)
         .width('100%')
         .fontColor($r("app.color.text_h1"))
         .fontSize(15)
@@ -177,12 +253,12 @@ export struct Home {
         .height(5)
         .color(Color.Transparent)
       Row() {
-        Text(getArticleChapter(article))
+        Text(getArticleChapter(this.article))
           .fontColor($r("app.color.text_h2"))
           .fontSize(12)
         Blank()
-        Image(article.collect ? $r("app.media.ic_like_fill") : $r("app.media.ic_like"))
-          .fillColor(article.collect ? $r("app.color.red") : $r("app.color.text_h2"))
+        Image(this.article.collect ? $r("app.media.ic_like_fill") : $r("app.media.ic_like"))
+          .fillColor(this.article.collect ? $r("app.color.red") : $r("app.color.text_h2"))
           .width(24)
           .height(24)
           .onClick((event) => {
