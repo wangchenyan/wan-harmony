@@ -1,3 +1,5 @@
+import { MaterialProgressBar, MaterialProgressStyle } from '@ohos/materialprogressbar'
+
 export enum LoadState {
   LOADING,
   SUCCESS,
@@ -14,7 +16,13 @@ export struct PageLoading {
   build() {
     Stack() {
       if (this.loadState === LoadState.LOADING) {
-        Progress({ value: 0, total: 0, type: ProgressType.Eclipse })
+        MaterialProgressBar({ style: MaterialProgressStyle.MaterialCircular,
+          modelBuild: {
+            color: $r("app.color.main"),
+            bgColor: $r("app.color.divider"),
+            indeterminate: true,
+            strokeWidth: 4
+          } })
           .width(48)
           .height(48)
           .align(Alignment.Center)

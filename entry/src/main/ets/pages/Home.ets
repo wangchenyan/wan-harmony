@@ -1,13 +1,16 @@
 import hilog from '@ohos.hilog'
 import { Api } from '../net/Api'
-import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, } from '../net/Model'
+import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, HomeBannerData, } from '../net/Model'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 
 @Component
 export struct Home {
   private TAG = "Home"
+  private swiperController: SwiperController = new SwiperController()
+  @State bannerList: Array<HomeBannerData> = []
   @State articleList: Array<Article> = []
   @State loadState: LoadState = LoadState.LOADING
+  @State bannerPosition: number = 0
 
   async aboutToAppear() {
     hilog.info(0, this.TAG, "aboutToAppear")
@@ -16,20 +19,22 @@ export struct Home {
 
   async loadData() {
     this.loadState = LoadState.LOADING
+    let bannerRes = await Api.prototype.getHomeBanner()
     let topRes = await Api.prototype.getStickyArticle()
     let homeRes = await Api.prototype.getHomeArticleList(0)
 
-    if (topRes.isSuccessWithData() && homeRes.isSuccessWithData()) {
-      let list = []
+    if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && homeRes.isSuccessWithData()) {
+      let articleList = []
       topRes.data.forEach((item) => {
         let tag = new ArticleTag()
         tag.name = "置顶"
         item.tags = [tag].concat(item.tags)
-        list.push(item)
+        articleList.push(item)
       })
-      list = list.concat(homeRes.data.datas)
-      this.articleList = list
-      if (list.length === 0) {
+      articleList = articleList.concat(homeRes.data.datas)
+      this.articleList = articleList
+      this.bannerList = bannerRes.data
+      if (this.articleList.length === 0 && this.bannerList.length === 0) {
         this.loadState = LoadState.EMPTY
       } else {
         this.loadState = LoadState.SUCCESS
@@ -49,6 +54,10 @@ export struct Home {
     }) {
       Column() {
         List() {
+          ListItem() {
+            this.BannerBuilder()
+          }
+
           ForEach(this.articleList, (item: Article) => {
             ListItem() {
               this.ArticleItemBuilder(item)
@@ -68,6 +77,53 @@ export struct Home {
       .width('100%')
       .height('100%')
     }
+  }
+
+  @Builder
+  BannerBuilder() {
+    Stack() {
+      Swiper(this.swiperController) {
+        ForEach(this.bannerList, (item) => {
+          this.BannerItemBuilder(item)
+        })
+      }
+      .autoPlay(true)
+      .index(this.bannerPosition)
+      .loop(true)
+      .indicatorStyle({
+        right: 16,
+        bottom: 0
+      })
+      .onChange((index) => {
+        this.bannerPosition = index
+      })
+    }
+    .width('100%')
+    .height(220)
+  }
+
+  @Builder
+  BannerItemBuilder(data: HomeBannerData) {
+    Stack({ alignContent: Alignment.Bottom }) {
+      Image(data.imagePath)
+        .objectFit(ImageFit.Fill)
+        .width('100%')
+        .height('100%')
+      Text(data.title)
+        .width('100%')
+        .padding({
+          left: 16, top: 6, right: 16, bottom: 6
+        })
+        .fontColor($r("app.color.white"))
+        .fontSize(15)
+        .maxLines(1)
+        .backgroundColor($r("app.color.translucent_black_40"))
+    }
+    .width('100%')
+    .height('100%')
+    .onClick((event) => {
+
+    })
   }
 
   @Builder

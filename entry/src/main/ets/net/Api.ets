@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
-import { Article, ArticleList, Response } from './Model';
+import { Article, ArticleList, HomeBannerData, Response } from './Model';
 
 let TAG = "Api"
 let BASE_URL: string = "https://www.wanandroid.com"
@@ -44,5 +44,9 @@ export class Api {
 
   getStickyArticle(): Promise<Response<Array<Article>>> {
     return requestSync("/article/top/json", http.RequestMethod.GET)
+  }
+
+  getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
+    return requestSync("/banner/json", http.RequestMethod.GET)
   }
 }

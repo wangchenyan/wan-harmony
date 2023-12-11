@@ -9,6 +9,10 @@
       "value": "#FFFFFF"
     },
     {
+      "name": "translucent_black_40",
+      "value": "#66000000"
+    },
+    {
       "name": "main",
       "value": "#4CAF50"
     },
