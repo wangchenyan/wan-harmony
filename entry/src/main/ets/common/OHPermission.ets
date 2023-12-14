@@ -2,7 +2,7 @@ import abilityAccessCtrl, { Permissions } from '@ohos.abilityAccessCtrl';
 import bundleManager from '@ohos.bundle.bundleManager';
 
 export default class OHPermission {
-  requestPermission(context: Context, permissionList: Permissions[], callback: (boolean) => void) {
+  static requestPermission(context: Context, permissionList: Permissions[], callback: (boolean) => void) {
     let atManager = abilityAccessCtrl.createAtManager();
     // requestPermissionsFromUser会判断权限的授权状态来决定是否唤起弹窗
     atManager.requestPermissionsFromUser(context, permissionList)
@@ -24,7 +24,7 @@ export default class OHPermission {
       })
   }
 
-  async checkPermission(permission: Permissions): Promise<boolean> {
+  static async checkPermission(permission: Permissions): Promise<boolean> {
     let grantStatus: abilityAccessCtrl.GrantStatus = await this.checkAccessToken(permission);
     if (grantStatus === abilityAccessCtrl.GrantStatus.PERMISSION_GRANTED) {
       // 已经授权，可以继续访问目标操作
@@ -34,7 +34,7 @@ export default class OHPermission {
     }
   }
 
-  async checkAccessToken(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
+  static async checkAccessToken(permission: Permissions): Promise<abilityAccessCtrl.GrantStatus> {
     let atManager = abilityAccessCtrl.createAtManager();
     let grantStatus: abilityAccessCtrl.GrantStatus;
 

@@ -37,6 +37,10 @@
       "value": "#FAFAFA"
     },
     {
+      "name": "title_bar_bg",
+      "value": "#FAFAFA"
+    },
+    {
       "name": "red",
       "value": "#F44336"
     },

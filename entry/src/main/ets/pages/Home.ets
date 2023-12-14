@@ -1,20 +1,24 @@
 import hilog from '@ohos.hilog'
-import { Api } from '../net/Api'
+import Api from '../net/Api'
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, HomeBannerData, } from '../net/Model'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { PullToRefresh } from '@ohos/pulltorefresh'
+import { TitleLayout } from '../widgets/TitleLayout'
+import router from '@ohos.router'
+
+const TAG = "Home"
 
 @Component
 export struct Home {
-  private TAG = "Home"
   private scroller: Scroller = new Scroller()
   private page: number = 0
   @State data: Array<object> = []
   @State loadState: LoadState = LoadState.LOADING
   @State bannerPosition: number = 0
+  @State title: string = "首页"
 
   async aboutToAppear() {
-    hilog.info(0, this.TAG, "aboutToAppear")
+    hilog.info(0, TAG, "aboutToAppear")
     this.loadData()
   }
 
@@ -37,9 +41,9 @@ export struct Home {
   async loadDataByPage(page: number): Promise<Array<Object>> {
     return new Promise<Array<Object>>(async (resolve, reject) => {
       if (page === 0) {
-        let bannerRes = await Api.prototype.getHomeBanner()
-        let topRes = await Api.prototype.getStickyArticle()
-        let articleRes = await Api.prototype.getHomeArticleList(page)
+        let bannerRes = await Api.getHomeBanner()
+        let topRes = await Api.getStickyArticle()
+        let articleRes = await Api.getHomeArticleList(page)
 
         if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
           let bannerList = bannerRes.data
@@ -57,7 +61,7 @@ export struct Home {
           reject()
         }
       } else {
-        let articleRes = await Api.prototype.getHomeArticleList(page)
+        let articleRes = await Api.getHomeArticleList(page)
         if (articleRes.isSuccessWithData()) {
           resolve(articleRes.data.datas)
         } else {
@@ -71,11 +75,18 @@ export struct Home {
     PageLoading({
       loadState: $loadState,
       onReload: () => {
-        hilog.debug(0, this.TAG, "onReload")
+        hilog.debug(0, TAG, "onReload")
         this.loadData()
       }
     }) {
       Column() {
+        TitleLayout({
+          title: $title,
+          menuIcon: $r("app.media.ic_search"),
+          onIconClick: () => {
+            router.back()
+          }
+        })
         PullToRefresh({
           data: $data,
           scroller: this.scroller,
@@ -178,7 +189,7 @@ struct BannerBuilder {
   BannerItemBuilder(data: HomeBannerData) {
     Stack({ alignContent: Alignment.Bottom }) {
       Image(data.imagePath)
-        .objectFit(ImageFit.Fill)
+        .objectFit(ImageFit.Cover)
         .width('100%')
         .height('100%')
       Text(data.title)
@@ -194,7 +205,12 @@ struct BannerBuilder {
     .width('100%')
     .height('100%')
     .onClick((event) => {
-
+      router.pushUrl({
+        url: 'pages/WebPage',
+        params: {
+          url: data.url
+        }
+      })
     })
   }
 }
@@ -270,5 +286,13 @@ struct ArticleItemBuilder {
     }
     .width('100%')
     .padding({ left: 16, top: 10, right: 16, bottom: 10 })
+    .onClick((e) => {
+      router.pushUrl({
+        url: 'pages/WebPage',
+        params: {
+          url: this.article.link
+        }
+      })
+    })
   }
 }

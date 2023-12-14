@@ -37,16 +37,16 @@ function requestSync<T>(path: string, method: http.RequestMethod): Promise<Respo
   })
 }
 
-export class Api {
-  getHomeArticleList(page: number): Promise<Response<ArticleList>> {
+export default class Api {
+  static getHomeArticleList(page: number): Promise<Response<ArticleList>> {
     return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET)
   }
 
-  getStickyArticle(): Promise<Response<Array<Article>>> {
+  static getStickyArticle(): Promise<Response<Array<Article>>> {
     return requestSync("/article/top/json", http.RequestMethod.GET)
   }
 
-  getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
+  static getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
     return requestSync("/banner/json", http.RequestMethod.GET)
   }
 }

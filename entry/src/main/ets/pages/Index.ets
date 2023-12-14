@@ -31,7 +31,9 @@ struct Index {
         TabContent() {
           Mine()
         }.tabBar(this.TabBuilder("我的", 3, $r("app.media.ic_tab_my_fill"), $r("app.media.ic_tab_my")))
-      }.onChange((index) => {
+      }
+      .scrollable(false)
+      .onChange((index) => {
         this.currentIndex = index
       })
     } else {
@@ -41,7 +43,7 @@ struct Index {
   }
 
   aboutToAppear() {
-    OHPermission.prototype.requestPermission(getContext(this), ['ohos.permission.INTERNET'], (grant) => {
+    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'], (grant) => {
       hilog.info(0, this.tag, `requestPermission: ${grant}`)
       this.isPermissionGrant = grant
     })

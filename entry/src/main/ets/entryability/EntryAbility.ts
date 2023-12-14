@@ -1,6 +1,7 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
+import SystemBarUtils from '../common/SystemBarUtils'
 
 export default class EntryAbility extends UIAbility {
   tag: string = "EntryAbility"
@@ -13,6 +14,16 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, this.tag, '%{public}s', 'Ability onWindowStageCreate');
+
+    windowStage.getMainWindow((err, windowClass) => {
+      if (err.code) {
+        hilog.error(0x0000, this.tag, 'Failed to obtain the main window. Cause: ' + JSON.stringify(err));
+        return;
+      }
+      hilog.info(0x0000, this.tag, 'Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
+      let avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
+      SystemBarUtils.statusBarHeight = avoidArea.topRect.height
+    })
 
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {
