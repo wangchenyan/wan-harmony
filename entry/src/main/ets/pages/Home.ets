@@ -12,7 +12,7 @@ const TAG = "Home"
 export struct Home {
   private scroller: Scroller = new Scroller()
   private page: number = 0
-  @State data: Array<object> = []
+  @State data: Array<Object> = []
   @State loadState: LoadState = LoadState.LOADING
   @State bannerPosition: number = 0
   @State title: string = "首页"
@@ -41,9 +41,9 @@ export struct Home {
   async loadDataByPage(page: number): Promise<Array<Object>> {
     return new Promise<Array<Object>>(async (resolve, reject) => {
       if (page === 0) {
-        let bannerRes = await Api.getHomeBanner()
-        let topRes = await Api.getStickyArticle()
-        let articleRes = await Api.getHomeArticleList(page)
+        let bannerRes = await Api.get().getHomeBanner()
+        let topRes = await Api.get().getStickyArticle()
+        let articleRes = await Api.get().getHomeArticleList(page)
 
         if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
           let bannerList = bannerRes.data
@@ -61,7 +61,7 @@ export struct Home {
           reject()
         }
       } else {
-        let articleRes = await Api.getHomeArticleList(page)
+        let articleRes = await Api.get().getHomeArticleList(page)
         if (articleRes.isSuccessWithData()) {
           resolve(articleRes.data.datas)
         } else {
@@ -83,8 +83,7 @@ export struct Home {
         TitleLayout({
           title: $title,
           menuIcon: $r("app.media.ic_search"),
-          onIconClick: () => {
-            router.back()
+          onMenuClick: () => {
           }
         })
         PullToRefresh({

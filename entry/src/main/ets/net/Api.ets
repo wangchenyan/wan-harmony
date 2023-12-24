@@ -1,52 +1,104 @@
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
 import { Article, ArticleList, HomeBannerData, Response } from './Model';
+import { User } from '../service/UserService';
+import uri from '@ohos.uri';
+import PersistentCookieJar from './cookie/PersistentCookieJar';
+import CookieJar from './cookie/CookieJar';
+import EntryContext from '../common/EntryContext';
+import CookieUtils from './cookie/CookieUtils';
 
-let TAG = "Api"
-let BASE_URL: string = "https://www.wanandroid.com"
+let TAG = "Api";
+let BASE_URL: string = "https://www.wanandroid.com";
 
-function request(path: string, method: http.RequestMethod, callback: (Response) => void) {
-  let httpRequest = http.createHttp();
-  hilog.info(0, TAG, `start request, path: ${path}`)
-  httpRequest.request(
-    `${BASE_URL}${path}`,
-    {
-      method: method,
-      expectDataType: http.HttpDataType.OBJECT,
-    },
-    (err, data) => {
-      let res = new Response()
-      if (!err && data.responseCode === 200) {
-        Object.assign(res, data.result)
-        hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
-      } else {
-        hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
-        res.errorCode = data.responseCode
-        res.errorMsg = err.message
-      }
-      callback(res)
-    }
-  )
+let cookieJar: CookieJar = new PersistentCookieJar(EntryContext.getContext() as Context);
+
+function parseUri(url: string): uri.URI {
+  return new uri.URI(url);
 }
 
-function requestSync<T>(path: string, method: http.RequestMethod): Promise<Response<T>> {
+async function requestSync<T>(path: string, method: http.RequestMethod, extraData?: Object): Promise<Response<T>> {
+  await cookieJar.init();
   return new Promise<Response<T>>((resolve, reject) => {
-    request(path, method, (res) => {
-      resolve(res)
-    })
+    let url = BASE_URL + path;
+    let uri = parseUri(url);
+    let header = {};
+    let cookies = cookieJar.loadForRequest(uri);
+    if (cookies.length > 0) {
+      header["Cookie"] = CookieUtils.cookieHeader(cookies);
+    }
+    if (method === http.RequestMethod.POST) {
+      header["Content-Type"] = "application/x-www-form-urlencoded";
+    }
+    let httpRequest = http.createHttp();
+    hilog.info(0, TAG, `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData));
+    httpRequest.request(
+      url,
+      {
+        method: method,
+        expectDataType: http.HttpDataType.OBJECT,
+        header: header,
+        extraData: extraData
+      },
+      (err, data) => {
+        let res = new Response<T>()
+        if (!err && data.responseCode === 200) {
+          cookieJar.saveFromResponse(uri, CookieUtils.parseHttpRequestCookies(data.cookies))
+          Object.assign(res, data.result)
+          hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
+        } else {
+          hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
+          res.errorCode = data.responseCode
+          res.errorMsg = err.message
+        }
+        resolve(res);
+      }
+    )
   })
 }
 
 export default class Api {
-  static getHomeArticleList(page: number): Promise<Response<ArticleList>> {
-    return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET)
+  private static instance: Api;
+
+  private constructor() {
   }
 
-  static getStickyArticle(): Promise<Response<Array<Article>>> {
-    return requestSync("/article/top/json", http.RequestMethod.GET)
+  static get(): Api {
+    if (Api.instance === undefined) {
+      Api.instance = new Api();
+    }
+    return Api.instance;
   }
 
-  static getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
-    return requestSync("/banner/json", http.RequestMethod.GET)
+  clearCookie() {
+    cookieJar.clear();
+  }
+
+  async getHomeArticleList(page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET);
+  }
+
+  async getStickyArticle(): Promise<Response<Array<Article>>> {
+    return requestSync("/article/top/json", http.RequestMethod.GET);
+  }
+
+  async getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
+    return requestSync("/banner/json", http.RequestMethod.GET);
+  }
+
+  async login(username: string, password: string): Promise<Response<User>> {
+    return requestSync("/user/login", http.RequestMethod.POST, `username=${username}&password=${password}`);
+  }
+
+  async logout(): Promise<Response<string>> {
+    return requestSync("/user/logout/json", http.RequestMethod.GET);
+  }
+
+  async getUserInfo(): Promise<Response<User>> {
+    return requestSync("/lg/coin/userinfo/json", http.RequestMethod.GET);
+  }
+
+  async getCollectArticleList(page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET);
   }
 }

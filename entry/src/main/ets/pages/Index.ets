@@ -3,7 +3,6 @@ import { Square } from './Square'
 import { Mine } from './Mine'
 import { Wechat } from './Wechat'
 import OHPermission from '../common/OHPermission'
-import hilog from '@ohos.hilog'
 
 @Entry
 @Component
@@ -36,6 +35,7 @@ struct Index {
       .onChange((index) => {
         this.currentIndex = index
       })
+      .backgroundColor($r("app.color.start_window_background"))
     } else {
       Text("No Permission")
         .textAlign(TextAlign.Center)
@@ -43,10 +43,13 @@ struct Index {
   }
 
   aboutToAppear() {
-    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'], (grant) => {
-      hilog.info(0, this.tag, `requestPermission: ${grant}`)
-      this.isPermissionGrant = grant
-    })
+    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'])
+      .then((v) => {
+        this.isPermissionGrant = true;
+      })
+      .catch((err) => {
+        this.isPermissionGrant = false;
+      })
   }
 
   @Builder

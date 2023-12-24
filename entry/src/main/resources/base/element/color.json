@@ -2,7 +2,7 @@
   "color": [
     {
       "name": "start_window_background",
-      "value": "#FFFFFF"
+      "value": "#FAFAFA"
     },
     {
       "name": "white",
@@ -34,7 +34,7 @@
     },
     {
       "name": "navi_bar_bg",
-      "value": "#FAFAFA"
+      "value": "#FFFFFF"
     },
     {
       "name": "title_bar_bg",
@@ -47,6 +47,10 @@
     {
       "name": "blue",
       "value": "#2196F3"
+    },
+    {
+      "name": "green",
+      "value": "#4CAF50"
     },
     {
       "name": "cyan",

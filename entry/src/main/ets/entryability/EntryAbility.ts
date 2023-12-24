@@ -1,14 +1,15 @@
 import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
+import EntryContext from '../common/EntryContext';
 import SystemBarUtils from '../common/SystemBarUtils'
 
 export default class EntryAbility extends UIAbility {
   tag: string = "EntryAbility"
 
   onCreate(want, launchParam) {
-    this.context
     hilog.info(0x0000, this.tag, '%{public}s', 'Ability onCreate');
+    EntryContext.setContext(this.context)
   }
 
   onWindowStageCreate(windowStage: window.WindowStage) {
