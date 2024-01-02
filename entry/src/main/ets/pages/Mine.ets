@@ -1,4 +1,5 @@
 import router from '@ohos.router'
+import promptAction from '@ohos.promptAction'
 import Api from '../net/Api'
 import UserService, { User } from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
@@ -14,6 +15,7 @@ class UserInfo {
 @Component
 export struct Mine {
   @State loadState: LoadState = LoadState.SUCCESS;
+  @State showLoading: boolean = false;
   @State title: string = "";
   private unLoginInfo: UserInfo = {
     name: "未登录",
@@ -49,13 +51,30 @@ export struct Mine {
   }
 
   async logout() {
-    await Api.get().logout();
-    UserService.get().clearUser();
+    let res = await promptAction.showDialog({
+      title: "提示",
+      message: "确认退出登录？",
+      buttons: [
+        {
+          text: "确认",
+          color: $r("app.color.main")
+        },
+        {
+          text: "取消",
+          color: $r("app.color.text_h2")
+        }
+      ]
+    })
+    if (res.index === 0) {
+      await Api.get().logout();
+      UserService.get().clearUser();
+    }
   }
 
   build() {
     PageLoading({
       loadState: $loadState,
+      showLoading: $showLoading
     }) {
       Column() {
         TitleLayout({

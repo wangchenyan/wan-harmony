@@ -10,62 +10,63 @@ const TAG = "Home"
 
 @Component
 export struct Home {
-  private scroller: Scroller = new Scroller()
-  private page: number = 0
-  @State data: Array<Object> = []
-  @State loadState: LoadState = LoadState.LOADING
-  @State bannerPosition: number = 0
-  @State title: string = "首页"
+  private scroller: Scroller = new Scroller();
+  private page: number = 0;
+  @State data: Array<Object> = [];
+  @State loadState: LoadState = LoadState.LOADING;
+  @State showLoading: boolean = false;
+  @State bannerPosition: number = 0;
+  @State title: string = "首页";
 
   async aboutToAppear() {
     hilog.info(0, TAG, "aboutToAppear")
-    this.loadData()
+    this.loadData();
   }
 
   async loadData() {
     this.loadState = LoadState.LOADING
     this.loadDataByPage(0).then(
       (data) => {
-        this.data = data
+        this.data = data;
         if (this.data.length === 0) {
-          this.loadState = LoadState.EMPTY
+          this.loadState = LoadState.EMPTY;
         } else {
-          this.loadState = LoadState.SUCCESS
+          this.loadState = LoadState.SUCCESS;
         }
       },
       (error) => {
-        this.loadState = LoadState.FAIL
+        this.loadState = LoadState.FAIL;
       })
   }
 
   async loadDataByPage(page: number): Promise<Array<Object>> {
     return new Promise<Array<Object>>(async (resolve, reject) => {
       if (page === 0) {
-        let bannerRes = await Api.get().getHomeBanner()
-        let topRes = await Api.get().getStickyArticle()
-        let articleRes = await Api.get().getHomeArticleList(page)
+        let bannerRes = await Api.get().getHomeBanner();
+        let topRes = await Api.get().getStickyArticle();
+        let articleRes = await Api.get().getHomeArticleList(page);
 
         if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
-          let bannerList = bannerRes.data
-          let articleList = []
+          let bannerList = bannerRes.data;
+          let articleList = [];
           topRes.data.forEach((item) => {
-            let tag = new ArticleTag()
-            tag.name = "置顶"
-            item.tags = [tag].concat(item.tags)
-            articleList.push(item)
+            let tag = new ArticleTag();
+            tag.name = "置顶";
+            item.tags = [tag].concat(item.tags);
+            articleList.push(item);
           })
-          articleList = articleList.concat(articleRes.data.datas)
-          let dataList = [bannerList].concat(articleList)
-          resolve(dataList)
+          articleList = articleList.concat(articleRes.data.datas);
+          let dataList = [bannerList].concat(articleList);
+          resolve(dataList);
         } else {
-          reject()
+          reject();
         }
       } else {
-        let articleRes = await Api.get().getHomeArticleList(page)
+        let articleRes = await Api.get().getHomeArticleList(page);
         if (articleRes.isSuccessWithData()) {
-          resolve(articleRes.data.datas)
+          resolve(articleRes.data.datas);
         } else {
-          reject()
+          reject();
         }
       }
     })
@@ -74,9 +75,10 @@ export struct Home {
   build() {
     PageLoading({
       loadState: $loadState,
+      showLoading: $showLoading,
       onReload: () => {
-        hilog.debug(0, TAG, "onReload")
-        this.loadData()
+        hilog.debug(0, TAG, "onReload");
+        this.loadData();
       }
     }) {
       Column() {
@@ -95,7 +97,7 @@ export struct Home {
               this.loadDataByPage(0).then(
                 (data) => {
                   resolve('刷新成功');
-                  this.data = data
+                  this.data = data;
                 },
                 (error) => {
                   resolve('刷新失败');
@@ -109,7 +111,7 @@ export struct Home {
               this.loadDataByPage(this.page).then(
                 (data) => {
                   resolve('加载成功');
-                  this.data = this.data.concat(data)
+                  this.data = this.data.concat(data);
                 },
                 (error) => {
                   resolve('加载失败');
@@ -177,7 +179,7 @@ struct BannerBuilder {
         bottom: 0
       })
       .onChange((index) => {
-        this.bannerPosition = index
+        this.bannerPosition = index;
       })
     }
     .width('100%')
@@ -209,7 +211,7 @@ struct BannerBuilder {
         params: {
           url: data.url
         }
-      })
+      });
     })
   }
 }
@@ -291,7 +293,7 @@ struct ArticleItemBuilder {
         params: {
           url: this.article.link
         }
-      })
+      });
     })
   }
 }

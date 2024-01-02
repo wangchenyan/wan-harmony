@@ -3,24 +3,38 @@ import Api from '../net/Api'
 import UserService from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
+import Toaster from '../common/Toaster'
 
 @Entry
 @Component
 struct Login {
-  @State loadState: LoadState = LoadState.SUCCESS
-  @State title: string = "登录"
-  private account: string
-  private password: string
+  @State loadState: LoadState = LoadState.SUCCESS;
+  @State showLoading: boolean = false;
+  @State title: string = "登录";
+  private account: string;
+  private password: string;
 
   async login() {
-    if (!this.account || !this.password) return;
+    if (!this.account) {
+      Toaster.show("请输入用户名");
+      return;
+    }
+    if (!this.password) {
+      Toaster.show("请输入密码");
+      return;
+    }
+    this.showLoading = true;
     let res = await Api.get().login(this.account, this.password);
+    this.showLoading = false;
     if (res.isSuccessWithData()) {
+      Toaster.show("登录成功");
       UserService.get().setUser(res.data);
       let user = await UserService.get().updateUser();
       if (user) {
         router.back();
       }
+    } else {
+      Toaster.show(res.errorMsg);
     }
   }
 
@@ -28,6 +42,7 @@ struct Login {
     Stack() {
       PageLoading({
         loadState: $loadState,
+        showLoading: $showLoading
       }) {
         Column() {
           TitleLayout({

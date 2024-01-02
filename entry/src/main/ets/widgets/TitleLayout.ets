@@ -1,5 +1,5 @@
 import router from '@ohos.router'
-import SystemBarUtils from '../common/SystemBarUtils'
+import WindowUtils from '../common/WindowUtils'
 
 @Component
 export struct TitleLayout {
@@ -15,7 +15,7 @@ export struct TitleLayout {
     Column() {
       Blank()
         .width('100%')
-        .height(SystemBarUtils.statusBarHeight + 'px')
+        .height(WindowUtils.statusBarHeight + 'px')
       if (this.isJustShowStatusBar === false) {
         Row() {
           if (this.onBack !== undefined) {
@@ -27,7 +27,7 @@ export struct TitleLayout {
               .objectFit(ImageFit.Contain)
               .onClick((event) => {
                 if (this.onBack !== undefined) {
-                  this.onBack()
+                  this.onBack();
                 }
               })
           }
@@ -47,7 +47,7 @@ export struct TitleLayout {
               .objectFit(ImageFit.Contain)
               .onClick((event) => {
                 if (this.onMenuClick !== undefined) {
-                  this.onMenuClick()
+                  this.onMenuClick();
                 }
               })
           }
