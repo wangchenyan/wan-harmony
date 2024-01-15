@@ -1,12 +1,14 @@
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
-import { Article, ArticleList, HomeBannerData, Response } from './Model';
+import { Article, ArticleList, HomeBannerData } from './model/Article';
 import { User } from '../service/UserService';
 import uri from '@ohos.uri';
 import PersistentCookieJar from './cookie/PersistentCookieJar';
 import CookieJar from './cookie/CookieJar';
 import EntryContext from '../common/EntryContext';
 import CookieUtils from './cookie/CookieUtils';
+import { Response } from './model/Response';
+import { HotKey } from './model/Search';
 
 let TAG = "Api";
 let BASE_URL: string = "https://www.wanandroid.com";
@@ -48,8 +50,8 @@ async function requestSync<T>(path: string, method: http.RequestMethod, extraDat
           hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
         } else {
           hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
-          res.errorCode = data.responseCode
-          res.errorMsg = err.message
+          res.errorCode = data?.responseCode??-1
+          res.errorMsg = err?.message??""
         }
         resolve(res);
       }
@@ -100,5 +102,13 @@ export default class Api {
 
   async getCollectArticleList(page: number): Promise<Response<ArticleList>> {
     return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET);
+  }
+
+  async getSearchHotKey(): Promise<Response<Array<HotKey>>> {
+    return requestSync("/hotkey/json", http.RequestMethod.GET)
+  }
+
+  async search(keyword: string, page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/article/query/${page}/json`, http.RequestMethod.POST, `k=${keyword}`)
   }
 }

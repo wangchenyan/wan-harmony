@@ -1,25 +1,26 @@
 import hilog from '@ohos.hilog'
 import Api from '../net/Api'
-import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor, HomeBannerData, } from '../net/Model'
+import { Article, ArticleTag, HomeBannerData, } from '../net/model/Article'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { PullToRefresh } from '@ohos/pulltorefresh'
 import { TitleLayout } from '../widgets/TitleLayout'
 import router from '@ohos.router'
-
-const TAG = "Home"
+import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder'
 
 @Component
 export struct Home {
-  private scroller: Scroller = new Scroller();
-  private page: number = 0;
   @State data: Array<Object> = [];
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State bannerPosition: number = 0;
   @State title: string = "首页";
+  private tag = "Home";
+  private scroller: Scroller = new Scroller();
+  private nextPage: number = 1;
+  private hasMore: boolean = true;
 
   async aboutToAppear() {
-    hilog.info(0, TAG, "aboutToAppear")
+    hilog.info(0, this.tag, "aboutToAppear")
     this.loadData();
   }
 
@@ -77,7 +78,7 @@ export struct Home {
       loadState: $loadState,
       showLoading: $showLoading,
       onReload: () => {
-        hilog.debug(0, TAG, "onReload");
+        hilog.debug(0, this.tag, "onReload");
         this.loadData();
       }
     }) {
@@ -86,6 +87,9 @@ export struct Home {
           title: $title,
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
+            router.pushUrl({
+              url: 'pages/SearchEntry'
+            });
           }
         })
         PullToRefresh({
@@ -96,8 +100,9 @@ export struct Home {
             return new Promise<string>((resolve, reject) => {
               this.loadDataByPage(0).then(
                 (data) => {
-                  resolve('刷新成功');
+                  this.nextPage = 1;
                   this.data = data;
+                  resolve('刷新成功');
                 },
                 (error) => {
                   resolve('刷新失败');
@@ -107,16 +112,25 @@ export struct Home {
           },
           onLoadMore: () => {
             return new Promise<string>((resolve, reject) => {
-              this.page++
-              this.loadDataByPage(this.page).then(
-                (data) => {
-                  resolve('加载成功');
-                  this.data = this.data.concat(data);
-                },
-                (error) => {
-                  resolve('加载失败');
-                }
-              )
+              if (this.hasMore) {
+                this.loadDataByPage(this.nextPage).then(
+                  (data) => {
+                    if (data.length > 0) {
+                      this.nextPage++
+                      this.data = this.data.concat(data);
+                      resolve('加载成功');
+                    } else {
+                      this.hasMore = false;
+                      resolve('没有更多了')
+                    }
+                  },
+                  (error) => {
+                    resolve('加载失败');
+                  }
+                )
+              } else {
+                resolve('没有更多了')
+              }
             });
           },
           customLoad: null,
@@ -210,88 +224,6 @@ struct BannerBuilder {
         url: 'pages/WebPage',
         params: {
           url: data.url
-        }
-      });
-    })
-  }
-}
-
-@Component
-struct ArticleItemBuilder {
-  article: Article
-
-  build() {
-    Column() {
-      Row() {
-        ForEach(this.article.tags, (item: ArticleTag) => {
-          Text(item.name)
-            .fontColor(getTagColor(item))
-            .fontSize(10)
-            .textAlign(TextAlign.Center)
-            .borderWidth(0.5)
-            .border({
-              width: 0.5,
-              color: getTagColor(item),
-              radius: 3
-            })
-            .padding({
-              left: 2, top: 1, right: 2, bottom: 1
-            })
-          Divider()
-            .width(8)
-            .height(0)
-            .color(Color.Transparent)
-        })
-        Text(getArticleAuthor(this.article))
-          .layoutWeight(1)
-          .fontColor($r("app.color.text_h1"))
-          .fontSize(12)
-        Divider()
-          .width(8)
-          .height(0)
-          .color(Color.Transparent)
-        Text(this.article.niceDate)
-          .fontColor($r("app.color.text_h2"))
-          .fontSize(12)
-      }
-
-      Divider()
-        .width('100%')
-        .height(4)
-        .color(Color.Transparent)
-      Text(this.article.title)
-        .width('100%')
-        .fontColor($r("app.color.text_h1"))
-        .fontSize(15)
-        .maxLines(2)
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-      Divider()
-        .width('100%')
-        .height(5)
-        .color(Color.Transparent)
-      Row() {
-        Text(getArticleChapter(this.article))
-          .fontColor($r("app.color.text_h2"))
-          .fontSize(12)
-        Blank()
-        Image(this.article.collect ? $r("app.media.ic_like_fill") : $r("app.media.ic_like"))
-          .fillColor(this.article.collect ? $r("app.color.red") : $r("app.color.text_h2"))
-          .width(24)
-          .height(24)
-          .onClick((event) => {
-
-          })
-      }
-      .justifyContent(FlexAlign.Center)
-      .width('100%')
-    }
-    .width('100%')
-    .padding({ left: 16, top: 10, right: 16, bottom: 10 })
-    .onClick((e) => {
-      router.pushUrl({
-        url: 'pages/WebPage',
-        params: {
-          url: this.article.link
         }
       });
     })

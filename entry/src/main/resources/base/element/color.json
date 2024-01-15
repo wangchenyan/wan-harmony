@@ -63,6 +63,10 @@
     {
       "name": "teal",
       "value": "#009688"
+    },
+    {
+      "name": "hot_key_bg",
+      "value": "#DDDDDD"
     }
   ]
 }

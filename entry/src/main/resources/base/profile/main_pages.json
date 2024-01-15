@@ -2,6 +2,8 @@
   "src": [
     "pages/Index",
     "pages/WebPage",
-    "pages/Login"
+    "pages/Login",
+    "pages/SearchEntry",
+    "pages/SearchResult"
   ]
 }
