@@ -3,7 +3,8 @@ import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor }
 
 @Component
 export struct ArticleItemBuilder {
-  article: Article
+  article: Article;
+  onCollectClick: (Article) => void;
 
   build() {
     Column() {
@@ -64,7 +65,9 @@ export struct ArticleItemBuilder {
           .width(24)
           .height(24)
           .onClick((event) => {
-
+            if (this.onCollectClick !== undefined) {
+              this.onCollectClick(this.article);
+            }
           })
       }
       .justifyContent(FlexAlign.Center)

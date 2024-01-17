@@ -1,31 +1,26 @@
-import hilog from '@ohos.hilog';
-import router from '@ohos.router';
 import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
-import CollectUtils from '../common/CollectUtils';
+import hilog from '@ohos.hilog';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
+import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import CollectUtils from '../common/CollectUtils';
 
 @Entry
 @Component
-struct SearchResult {
+struct CollectList {
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
-  @State title: string = "";
+  @State title: string = "我的收藏";
   @State data: Array<Article> = [];
-  private tag = "SearchResult"
-  private keyword: string
+  private tag = "CollectList"
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
   private nextPage: number = 1;
   private hasMore: boolean = true;
 
   aboutToAppear() {
-    this.keyword = router.getParams()['keyword']
-    this.title = this.keyword;
-    this.refreshConfig.setHasRefresh(false);
     this.loadData();
   }
 
@@ -46,25 +41,18 @@ struct SearchResult {
   }
 
   private async loadDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().search(this.keyword, page);
+    let res = await Api.get().getCollectList(page);
     return new Promise<Array<Article>>((resolve, reject) => {
       if (res.isSuccessWithData()) {
         let list = res.data.datas;
         list.forEach((item) => {
-          item.title = this.removeHtmlTags(item.title);
+          item.collect = true;
         })
         resolve(list);
       } else {
         reject();
       }
     })
-  }
-
-  private removeHtmlTags(text: string): string {
-    // 使用正则表达式将 < 开头到 > 结尾之间的部分全部替换成空字符串
-    return text.replace(/<[^>]+>/g, '')
-      .replace('&gt;', '>')
-      .replace('&lt;', '<');
   }
 
   build() {
@@ -86,6 +74,20 @@ struct SearchResult {
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
             customList: this.ListViewBuilder,
+            onRefresh: () => {
+              return new Promise<string>((resolve, reject) => {
+                this.loadDataByPage(0).then(
+                  (data) => {
+                    this.nextPage = 1;
+                    this.data = data;
+                    resolve('刷新成功');
+                  },
+                  (error) => {
+                    resolve('刷新失败');
+                  }
+                )
+              });
+            },
             onLoadMore: () => {
               return new Promise<string>((resolve, reject) => {
                 if (this.hasMore) {
@@ -128,8 +130,8 @@ struct SearchResult {
         ListItem() {
           ArticleItemBuilder({
             article: item,
-            onCollectClick: (article) => {
-              CollectUtils.collect(article)
+            onCollectClick: (article: Article) => {
+              CollectUtils.collect(article, article.originId)
                 .then((success) => {
                   if (success) {
                     this.data = this.data.map(item => item);

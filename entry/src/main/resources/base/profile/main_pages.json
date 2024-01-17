@@ -4,6 +4,7 @@
     "pages/WebPage",
     "pages/Login",
     "pages/SearchEntry",
-    "pages/SearchResult"
+    "pages/SearchResult",
+    "pages/CollectList"
   ]
 }

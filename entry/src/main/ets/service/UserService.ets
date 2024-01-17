@@ -1,4 +1,6 @@
 import dataPreferences from '@ohos.data.preferences';
+import promptAction from '@ohos.promptAction';
+import router from '@ohos.router';
 import EntryContext from '../common/EntryContext';
 import Api from '../net/Api';
 
@@ -39,6 +41,35 @@ export default class UserService {
       return true;
     }
     return false;
+  }
+
+  checkLogin(onLogin?: () => void) {
+    if (this.isLogin()) {
+      if (onLogin != undefined) {
+        onLogin()
+      }
+    } else {
+      promptAction.showDialog({
+        title: "提示",
+        message: "当前操作需要登录",
+        buttons: [
+          {
+            text: "立即登录",
+            color: $r("app.color.main")
+          },
+          {
+            text: "取消",
+            color: $r("app.color.text_h2")
+          }
+        ]
+      }).then((resp) => {
+        if (resp.index === 0) {
+          router.pushUrl({
+            url: 'pages/Login'
+          })
+        }
+      })
+    }
   }
 
   getUser(): User {

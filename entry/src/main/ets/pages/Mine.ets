@@ -106,9 +106,7 @@ export struct Mine {
         .margin({ top: 30 })
         .alignItems(HorizontalAlign.Center)
         .onClick((e) => {
-          if (!UserService.get().isLogin()) {
-            router.pushUrl({ url: 'pages/Login' })
-          }
+          UserService.get().checkLogin()
         })
 
         Row() {
@@ -127,9 +125,7 @@ export struct Mine {
         .padding({ left: 16, right: 16 })
         .backgroundColor($r("app.color.white"))
         .onClick((e) => {
-          if (!UserService.get().isLogin()) {
-            router.pushUrl({ url: 'pages/Login' })
-          }
+          UserService.get().checkLogin()
         })
 
         Row()
@@ -152,11 +148,9 @@ export struct Mine {
         .padding({ left: 16, right: 16 })
         .backgroundColor($r("app.color.white"))
         .onClick((event) => {
-          if (!UserService.get().isLogin()) {
-            router.pushUrl({ url: 'pages/Login' })
-          } else {
-
-          }
+          UserService.get().checkLogin(() => {
+            router.pushUrl({ url: "pages/CollectList" })
+          })
         })
 
         if (this.isLogin) {

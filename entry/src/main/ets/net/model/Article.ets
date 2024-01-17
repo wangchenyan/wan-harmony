@@ -46,16 +46,16 @@ export class Article {
 }
 
 export function getArticleAuthor(article: Article): string {
-  return article.author.length === 0 ? article.shareUser : article.author
+  return article.author ?? article.shareUser;
 }
 
 export function getArticleChapter(article: Article): string {
-  let chapter = article.superChapterName
-  if (chapter.length > 0 && article.chapterName.length > 0) {
-    chapter = chapter + " / "
+  let chapter = article.superChapterName ?? "";
+  if (chapter && article.chapterName) {
+    chapter = chapter + " / ";
   }
-  chapter = chapter + article.chapterName
-  return chapter
+  chapter = chapter + article.chapterName ?? "";
+  return chapter;
 }
 
 export class ArticleTag {

@@ -31,6 +31,10 @@ async function requestSync<T>(path: string, method: http.RequestMethod, extraDat
     }
     if (method === http.RequestMethod.POST) {
       header["Content-Type"] = "application/x-www-form-urlencoded";
+      if (!extraData) {
+        // POST 必须有请求体，否则会报 Parameter error
+        extraData = {};
+      }
     }
     let httpRequest = http.createHttp();
     hilog.info(0, TAG, `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData));
@@ -100,15 +104,23 @@ export default class Api {
     return requestSync("/lg/coin/userinfo/json", http.RequestMethod.GET);
   }
 
-  async getCollectArticleList(page: number): Promise<Response<ArticleList>> {
-    return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET);
-  }
-
   async getSearchHotKey(): Promise<Response<Array<HotKey>>> {
     return requestSync("/hotkey/json", http.RequestMethod.GET)
   }
 
   async search(keyword: string, page: number): Promise<Response<ArticleList>> {
     return requestSync(`/article/query/${page}/json`, http.RequestMethod.POST, `k=${keyword}`)
+  }
+
+  async collect(id: number): Promise<Response<Object>> {
+    return requestSync(`/lg/collect/${id}/json`, http.RequestMethod.POST)
+  }
+
+  async unCollect(id: number): Promise<Response<Object>> {
+    return requestSync(`/lg/uncollect_originId/${id}/json`, http.RequestMethod.POST)
+  }
+
+  async getCollectList(page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET)
   }
 }

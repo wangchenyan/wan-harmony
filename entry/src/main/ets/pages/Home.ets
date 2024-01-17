@@ -6,6 +6,7 @@ import { PullToRefresh } from '@ohos/pulltorefresh'
 import { TitleLayout } from '../widgets/TitleLayout'
 import router from '@ohos.router'
 import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder'
+import CollectUtils from '../common/CollectUtils'
 
 @Component
 export struct Home {
@@ -153,7 +154,15 @@ export struct Home {
             })
           } else {
             ArticleItemBuilder({
-              article: item as Article
+              article: item as Article,
+              onCollectClick: (article: Article) => {
+                CollectUtils.collect(article)
+                  .then((success) => {
+                    if (success) {
+                      this.data = this.data.map(item => item);
+                    }
+                  })
+              }
             })
           }
         }
