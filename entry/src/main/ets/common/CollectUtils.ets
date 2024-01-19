@@ -1,7 +1,7 @@
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
 import UserService from '../service/UserService';
-import Toaster from './Toaster';
+import { toast } from './Toast';
 
 export default class CollectUtils {
   static async collect(article: Article, id?: number): Promise<boolean> {
@@ -20,7 +20,7 @@ export default class CollectUtils {
       if (res.isSuccess()) {
         article.collect = false;
       } else {
-        Toaster.show(res.errorMsg);
+        toast(res.errorMsg);
       }
       return new Promise<boolean>((resolve, reject) => {
         resolve(res.isSuccess());
@@ -30,7 +30,7 @@ export default class CollectUtils {
       if (res.isSuccess()) {
         article.collect = true;
       } else {
-        Toaster.show(res.errorMsg);
+        toast(res.errorMsg);
       }
       return new Promise<boolean>((resolve, reject) => {
         resolve(res.isSuccess());

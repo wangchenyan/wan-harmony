@@ -3,13 +3,14 @@ import WindowUtils from '../common/WindowUtils'
 
 @Component
 export struct TitleLayout {
-  @Link title: string
-  isJustShowStatusBar: boolean = false
+  @Link title: string;
+  isJustShowStatusBar: boolean = false;
+  showBack: boolean = true;
   onBack: () => void = () => {
-    router.back()
+    router.back();
   }
-  menuIcon?: Resource
-  onMenuClick?: () => void
+  menuIcon?: Resource;
+  onMenuClick?: () => void;
 
   build() {
     Column() {
@@ -18,7 +19,7 @@ export struct TitleLayout {
         .height(WindowUtils.statusBarHeight + 'px')
       if (this.isJustShowStatusBar === false) {
         Row() {
-          if (this.onBack !== undefined) {
+          if (this.showBack) {
             Image($r("app.media.ic_back"))
               .width(48)
               .height(48)

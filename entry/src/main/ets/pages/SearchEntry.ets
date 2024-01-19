@@ -1,9 +1,9 @@
 import router from '@ohos.router'
-import Toaster from '../common/Toaster'
 import WindowUtils from '../common/WindowUtils'
 import Api from '../net/Api'
 import { HotKey } from '../net/model/Search'
 import Preferences from '../common/Preferences'
+import { toast } from '../common/Toast'
 
 @Entry
 @Component
@@ -23,7 +23,7 @@ struct SearchEntry {
 
   search() {
     if (!this.keyword) {
-      Toaster.show("请输入关键词");
+      toast("请输入关键词");
       return;
     }
     let historyKeys = this.historyKeys;

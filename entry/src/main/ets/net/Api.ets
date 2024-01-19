@@ -84,12 +84,16 @@ export default class Api {
     return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET);
   }
 
-  async getStickyArticle(): Promise<Response<Array<Article>>> {
+  async getTopArticle(): Promise<Response<Array<Article>>> {
     return requestSync("/article/top/json", http.RequestMethod.GET);
   }
 
   async getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
     return requestSync("/banner/json", http.RequestMethod.GET);
+  }
+
+  async getSquareArticleList(page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/user_article/list/${page}/json`, http.RequestMethod.GET);
   }
 
   async login(username: string, password: string): Promise<Response<User>> {

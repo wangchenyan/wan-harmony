@@ -45,7 +45,7 @@ export struct Home {
     return new Promise<Array<Object>>(async (resolve, reject) => {
       if (page === 0) {
         let bannerRes = await Api.get().getHomeBanner();
-        let topRes = await Api.get().getStickyArticle();
+        let topRes = await Api.get().getTopArticle();
         let articleRes = await Api.get().getHomeArticleList(page);
 
         if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
@@ -86,6 +86,7 @@ export struct Home {
       Column() {
         TitleLayout({
           title: $title,
+          showBack: false,
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
             router.pushUrl({

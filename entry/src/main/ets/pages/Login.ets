@@ -1,9 +1,9 @@
 import router from '@ohos.router'
+import { toast } from '../common/Toast'
 import Api from '../net/Api'
 import UserService from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
-import Toaster from '../common/Toaster'
 
 @Entry
 @Component
@@ -16,25 +16,25 @@ struct Login {
 
   async login() {
     if (!this.account) {
-      Toaster.show("请输入用户名");
+      toast("请输入用户名");
       return;
     }
     if (!this.password) {
-      Toaster.show("请输入密码");
+      toast("请输入密码");
       return;
     }
     this.showLoading = true;
     let res = await Api.get().login(this.account, this.password);
     this.showLoading = false;
     if (res.isSuccessWithData()) {
-      Toaster.show("登录成功");
+      toast("登录成功");
       UserService.get().setUser(res.data);
       let user = await UserService.get().updateUser();
       if (user) {
         router.back();
       }
     } else {
-      Toaster.show(res.errorMsg);
+      toast(res.errorMsg);
     }
   }
 
