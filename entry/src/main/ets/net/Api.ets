@@ -9,6 +9,7 @@ import EntryContext from '../common/EntryContext';
 import CookieUtils from './cookie/CookieUtils';
 import { Response } from './model/Response';
 import { HotKey } from './model/Search';
+import { WeChatAuthor } from './model/WeChat';
 
 let TAG = "Api";
 let BASE_URL: string = "https://www.wanandroid.com";
@@ -94,6 +95,14 @@ export default class Api {
 
   async getSquareArticleList(page: number): Promise<Response<ArticleList>> {
     return requestSync(`/user_article/list/${page}/json`, http.RequestMethod.GET);
+  }
+
+  async getWeChatAuthorList(): Promise<Response<Array<WeChatAuthor>>> {
+    return requestSync("/wxarticle/chapters/json", http.RequestMethod.GET)
+  }
+
+  async getWeChatArticleList(id: number, page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/wxarticle/list/${id}/${page}/json`, http.RequestMethod.GET);
   }
 
   async login(username: string, password: string): Promise<Response<User>> {
