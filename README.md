@@ -2,6 +2,8 @@
 
 鸿蒙版玩 Android 客户端
 
+[鸿蒙即将抛弃Android，你还不来学习一下？](https://juejin.cn/post/7340307629891616808)
+
 ## 环境
 
 - DevEco Studio 3.1.1 Release
