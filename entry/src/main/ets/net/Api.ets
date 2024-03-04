@@ -10,6 +10,7 @@ import CookieUtils from './cookie/CookieUtils';
 import { Response } from './model/Response';
 import { HotKey } from './model/Search';
 import { WeChatAuthor } from './model/WeChat';
+import { Tree } from './model/Tree';
 
 let TAG = "Api";
 let BASE_URL: string = "https://www.wanandroid.com";
@@ -51,7 +52,11 @@ async function requestSync<T>(path: string, method: http.RequestMethod, extraDat
         let res = new Response<T>()
         if (!err && data.responseCode === 200) {
           cookieJar.saveFromResponse(uri, CookieUtils.parseHttpRequestCookies(data.cookies))
-          Object.assign(res, data.result)
+          if (typeof data.result === 'string') {
+            Object.assign(res, JSON.parse(data.result));
+          } else {
+            Object.assign(res, data.result);
+          }
           hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
         } else {
           hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
@@ -135,5 +140,13 @@ export default class Api {
 
   async getCollectList(page: number): Promise<Response<ArticleList>> {
     return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET)
+  }
+
+  async getTree(): Promise<Response<Array<Tree>>> {
+    return requestSync(`/tree/json`, http.RequestMethod.GET)
+  }
+
+  async getTreeArticleList(cid: number, page: number): Promise<Response<ArticleList>> {
+    return requestSync(`/article/list/${page}/json?cid=${cid}`, http.RequestMethod.GET)
   }
 }

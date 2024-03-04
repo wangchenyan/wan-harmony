@@ -3,6 +3,7 @@ import { Square } from './Square'
 import { Mine } from './Mine'
 import { Wechat } from './Wechat'
 import OHPermission from '../common/OHPermission'
+import { TreeTab } from './TreeTab'
 
 @Entry
 @Component
@@ -24,12 +25,16 @@ struct Index {
         }.tabBar(this.TabBuilder("广场", 1, $r("app.media.ic_tab_discover_fill"), $r("app.media.ic_tab_discover")))
 
         TabContent() {
+          TreeTab()
+        }.tabBar(this.TabBuilder("体系", 2, $r("app.media.ic_tab_tree_fill"), $r("app.media.ic_tab_tree")))
+
+        TabContent() {
           Wechat()
-        }.tabBar(this.TabBuilder("公众号", 2, $r("app.media.ic_tab_wechat_fill"), $r("app.media.ic_tab_wechat")))
+        }.tabBar(this.TabBuilder("公众号", 3, $r("app.media.ic_tab_wechat_fill"), $r("app.media.ic_tab_wechat")))
 
         TabContent() {
           Mine()
-        }.tabBar(this.TabBuilder("我的", 3, $r("app.media.ic_tab_my_fill"), $r("app.media.ic_tab_my")))
+        }.tabBar(this.TabBuilder("我的", 4, $r("app.media.ic_tab_my_fill"), $r("app.media.ic_tab_my")))
       }
       .scrollable(false)
       .onChange((index) => {
