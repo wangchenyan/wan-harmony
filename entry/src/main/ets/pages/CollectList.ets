@@ -73,7 +73,9 @@ struct CollectList {
             data: $data,
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
-            customList: this.ListViewBuilder,
+            customList: () => {
+              this.getListView();
+            },
             onRefresh: () => {
               return new Promise<string>((resolve, reject) => {
                 this.loadDataByPage(0).then(
@@ -124,7 +126,7 @@ struct CollectList {
   }
 
   @Builder
-  ListViewBuilder() {
+  private getListView() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {

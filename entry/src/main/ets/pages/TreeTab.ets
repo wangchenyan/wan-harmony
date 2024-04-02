@@ -153,7 +153,9 @@ export struct TreeTab {
                   data: $data,
                   scroller: this.articleScroller,
                   refreshConfigurator: this.refreshConfig,
-                  customList: this.ListViewBuilder,
+                  customList: () => {
+                    this.getListView();
+                  },
                   onLoadMore: () => {
                     return new Promise<string>((resolve, reject) => {
                       if (this.hasMore) {
@@ -229,6 +231,7 @@ export struct TreeTab {
                             Preferences.get(getContext())
                               .putSelectedTreeId(this.selectTrees.first!!.id, this.selectTrees.second!!.id)
                             this.showSelectLayer = false;
+                            this.hasMore = true;
                             this.loadArticleData();
                           })
                       }
@@ -264,7 +267,7 @@ export struct TreeTab {
   }
 
   @Builder
-  ListViewBuilder() {
+  private getListView() {
     List({ scroller: this.articleScroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {

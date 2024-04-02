@@ -99,7 +99,9 @@ export struct Home {
         PullToRefresh({
           data: $data,
           scroller: this.scroller,
-          customList: this.ListViewBuilder,
+          customList: () => {
+            this.getListView();
+          },
           onRefresh: () => {
             return new Promise<string>((resolve, reject) => {
               this.loadDataByPage(0).then(
@@ -147,7 +149,7 @@ export struct Home {
   }
 
   @Builder
-  ListViewBuilder() {
+  private getListView() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: object) => {
         ListItem() {

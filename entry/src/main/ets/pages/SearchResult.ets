@@ -86,7 +86,9 @@ struct SearchResult {
             data: $data,
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
-            customList: this.ListViewBuilder,
+            customList: () => {
+              this.getListView();
+            },
             onLoadMore: () => {
               return new Promise<string>((resolve, reject) => {
                 if (this.hasMore) {
@@ -123,7 +125,7 @@ struct SearchResult {
   }
 
   @Builder
-  ListViewBuilder() {
+  private getListView() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
