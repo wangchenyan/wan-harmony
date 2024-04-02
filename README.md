@@ -6,8 +6,9 @@
 
 ## 环境
 
-- DevEco Studio 3.1.1 Release
-- Harmony OS Api 9
+- DevEco Studio NEXT Developer Preview1
+  - Build Version: 4.1.3.501
+- Harmony OS Api 11
 
 ## 功能
 
@@ -15,6 +16,7 @@
 - 等级、排名、积分、收藏
 - 首页、搜索
 - 广场
+- 体系
 - 公众号
 
 ## 截图
