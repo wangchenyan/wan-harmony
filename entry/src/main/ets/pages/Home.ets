@@ -36,7 +36,7 @@ export struct Home {
           this.loadState = LoadState.SUCCESS;
         }
       },
-      (error) => {
+      () => {
         this.loadState = LoadState.FAIL;
       })
   }
@@ -49,16 +49,18 @@ export struct Home {
         let articleRes = await Api.get().getHomeArticleList(page);
 
         if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
-          let bannerList = bannerRes.data;
-          let articleList = [];
-          topRes.data.forEach((item) => {
+          let bannerList = bannerRes.getDataOrThrow();
+          let articleList: Array<Article> = [];
+          topRes.getDataOrThrow().forEach((item) => {
             let tag = new ArticleTag();
             tag.name = "置顶";
             item.tags = [tag].concat(item.tags);
             articleList.push(item);
           })
-          articleList = articleList.concat(articleRes.data.datas);
-          let dataList = [bannerList].concat(articleList);
+          articleList = articleList.concat(articleRes.getDataOrThrow().datas);
+          let dataList: Array<Object> = [];
+          dataList.push(bannerList);
+          dataList = dataList.concat(articleList);
           resolve(dataList);
         } else {
           reject();
@@ -66,7 +68,7 @@ export struct Home {
       } else {
         let articleRes = await Api.get().getHomeArticleList(page);
         if (articleRes.isSuccessWithData()) {
-          resolve(articleRes.data.datas);
+          resolve(articleRes.getDataOrThrow().datas);
         } else {
           reject();
         }
@@ -106,7 +108,7 @@ export struct Home {
                   this.data = data;
                   resolve('刷新成功');
                 },
-                (error) => {
+                () => {
                   resolve('刷新失败');
                 }
               )
@@ -126,7 +128,7 @@ export struct Home {
                       resolve('没有更多了')
                     }
                   },
-                  (error) => {
+                  () => {
                     resolve('加载失败');
                   }
                 )
@@ -156,13 +158,11 @@ export struct Home {
           } else {
             ArticleItemBuilder({
               article: item as Article,
-              onCollectClick: (article: Article) => {
-                CollectUtils.collect(article)
-                  .then((success) => {
-                    if (success) {
-                      this.data = this.data.map(item => item);
-                    }
-                  })
+              onCollectClick: async (article: Article) => {
+                let success = await CollectUtils.collect(article)
+                if (success) {
+                  this.data = this.data.map(item => item);
+                }
               }
             })
           }
@@ -186,12 +186,12 @@ export struct Home {
 struct BannerBuilder {
   private swiperController: SwiperController = new SwiperController()
   @State private bannerPosition: number = 0
-  bannerList: Array<HomeBannerData>
+  bannerList: Array<HomeBannerData> = []
 
   build() {
     Stack() {
       Swiper(this.swiperController) {
-        ForEach(this.bannerList, (item) => {
+        ForEach(this.bannerList, (item: HomeBannerData) => {
           this.BannerItemBuilder(item)
         })
       }

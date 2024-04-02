@@ -16,14 +16,15 @@ struct SearchResult {
   @State title: string = "";
   @State data: Array<Article> = [];
   private tag = "SearchResult"
-  private keyword: string
+  private keyword: string = ""
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
   private nextPage: number = 1;
   private hasMore: boolean = true;
 
   aboutToAppear() {
-    this.keyword = router.getParams()['keyword']
+    let params = router.getParams() as SearchResultParams;
+    this.keyword = params.keyword;
     this.title = this.keyword;
     this.refreshConfig.setHasRefresh(false);
     this.loadData();
@@ -40,7 +41,7 @@ struct SearchResult {
           this.loadState = LoadState.SUCCESS;
         }
       },
-      (error) => {
+      () => {
         this.loadState = LoadState.FAIL;
       })
   }
@@ -49,7 +50,7 @@ struct SearchResult {
     let res = await Api.get().search(this.keyword, page);
     return new Promise<Array<Article>>((resolve, reject) => {
       if (res.isSuccessWithData()) {
-        let list = res.data.datas;
+        let list = res.getDataOrThrow().datas;
         list.forEach((item) => {
           item.title = this.removeHtmlTags(item.title);
         })
@@ -100,7 +101,7 @@ struct SearchResult {
                         resolve('没有更多了');
                       }
                     },
-                    (error) => {
+                    () => {
                       resolve('加载失败');
                     }
                   )
@@ -128,7 +129,7 @@ struct SearchResult {
         ListItem() {
           ArticleItemBuilder({
             article: item,
-            onCollectClick: (article) => {
+            onCollectClick: (article: Article) => {
               CollectUtils.collect(article)
                 .then((success) => {
                   if (success) {
@@ -150,5 +151,13 @@ struct SearchResult {
       endMargin: 16
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+}
+
+export class SearchResultParams {
+  keyword: string = ""
+
+  constructor(keyword: string) {
+    this.keyword = keyword;
   }
 }

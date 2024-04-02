@@ -22,7 +22,7 @@ export struct Wechat {
     Api.get().getWeChatAuthorList()
       .then((res) => {
         if (res.isSuccessWithData()) {
-          this.authors = res.data;
+          this.authors = res.getDataOrThrow();
           if (this.authors.length === 0) {
             this.loadState = LoadState.EMPTY;
           } else {

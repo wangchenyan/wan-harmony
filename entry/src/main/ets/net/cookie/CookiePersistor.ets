@@ -3,9 +3,9 @@ import Cookie from './Cookie';
 export default interface CookiePersistor {
   loadAll(): Promise<Cookie[]>;
 
-  saveAll(cookies: Array<Cookie>);
+  saveAll(cookies: Array<Cookie>): void;
 
-  removeAll(cookies: Array<Cookie>);
+  removeAll(cookies: Array<Cookie>): void;
 
-  clear();
+  clear(): void;
 }

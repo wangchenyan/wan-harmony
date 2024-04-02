@@ -11,6 +11,7 @@ import { Response } from './model/Response';
 import { HotKey } from './model/Search';
 import { WeChatAuthor } from './model/WeChat';
 import { Tree } from './model/Tree';
+import JSON from '@ohmos/json-bigint';
 
 let TAG = "Api";
 let BASE_URL: string = "https://www.wanandroid.com";
@@ -24,49 +25,63 @@ function parseUri(url: string): uri.URI {
 async function requestSync<T>(path: string, method: http.RequestMethod, extraData?: Object): Promise<Response<T>> {
   await cookieJar.init();
   return new Promise<Response<T>>((resolve, reject) => {
+    let headers = new Headers();
     let url = BASE_URL + path;
     let uri = parseUri(url);
-    let header = {};
     let cookies = cookieJar.loadForRequest(uri);
     if (cookies.length > 0) {
-      header["Cookie"] = CookieUtils.cookieHeader(cookies);
+      headers.cookie = CookieUtils.cookieHeader(cookies);
     }
     if (method === http.RequestMethod.POST) {
-      header["Content-Type"] = "application/x-www-form-urlencoded";
+      headers.contentType = "application/x-www-form-urlencoded"
       if (!extraData) {
         // POST 必须有请求体，否则会报 Parameter error
-        extraData = {};
+        extraData = new Object();
       }
     }
     let httpRequest = http.createHttp();
-    hilog.info(0, TAG, `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData));
+    hilog.info(0, TAG, `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData, undefined, undefined));
     httpRequest.request(
       url,
       {
         method: method,
         expectDataType: http.HttpDataType.OBJECT,
-        header: header,
+        header: headers,
         extraData: extraData
       },
       (err, data) => {
         let res = new Response<T>()
         if (!err && data.responseCode === 200) {
           cookieJar.saveFromResponse(uri, CookieUtils.parseHttpRequestCookies(data.cookies))
-          if (typeof data.result === 'string') {
-            Object.assign(res, JSON.parse(data.result));
+          if (data.resultType === http.HttpDataType.STRING) {
+            let result: Response<T> = JSON.parse(data.result);
+            res.errorCode = result.errorCode;
+            res.errorMsg = result.errorMsg;
+            res.data = result.data;
+          } else if (data.resultType === http.HttpDataType.OBJECT) {
+            let result = data.result as Response<T>;
+            res.errorCode = result.errorCode;
+            res.errorMsg = result.errorMsg;
+            res.data = result.data;
           } else {
-            Object.assign(res, data.result);
+            res.errorCode = -1
+            res.errorMsg = `UnSupport data type: ${data.resultType}`
           }
-          hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res)}`)
+          hilog.info(0, TAG, `request success, path: ${path}, result: ${JSON.stringify(res, undefined, undefined)}`)
         } else {
-          hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err)}`)
-          res.errorCode = data?.responseCode??-1
-          res.errorMsg = err?.message??""
+          hilog.error(0, TAG, `request error, path: ${path}, error: ${JSON.stringify(err, undefined, undefined)}`)
+          res.errorCode = data?.responseCode ?? -1
+          res.errorMsg = err?.message ?? ""
         }
         resolve(res);
       }
     )
   })
+}
+
+class Headers {
+  contentType?: string;
+  cookie?: string;
 }
 
 export default class Api {
@@ -111,7 +126,7 @@ export default class Api {
   }
 
   async login(username: string, password: string): Promise<Response<User>> {
-    return requestSync("/user/login", http.RequestMethod.POST, `username=${username}&password=${password}`);
+    return requestSync(`/user/login?username=${username}&password=${password}`, http.RequestMethod.POST);
   }
 
   async logout(): Promise<Response<string>> {
@@ -127,7 +142,7 @@ export default class Api {
   }
 
   async search(keyword: string, page: number): Promise<Response<ArticleList>> {
-    return requestSync(`/article/query/${page}/json`, http.RequestMethod.POST, `k=${keyword}`)
+    return requestSync(`/article/query/${page}/json?k=${encodeURIComponent(keyword)}`, http.RequestMethod.POST)
   }
 
   async collect(id: number): Promise<Response<Object>> {

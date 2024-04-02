@@ -11,8 +11,8 @@ struct Login {
   @State loadState: LoadState = LoadState.SUCCESS;
   @State showLoading: boolean = false;
   @State title: string = "登录";
-  private account: string;
-  private password: string;
+  private account: string = "";
+  private password: string = "";
 
   async login() {
     if (!this.account) {

@@ -34,7 +34,7 @@ export struct Square {
           this.loadState = LoadState.SUCCESS;
         }
       },
-      (error) => {
+      () => {
         this.loadState = LoadState.FAIL;
       })
   }
@@ -43,7 +43,7 @@ export struct Square {
     let res = await Api.get().getSquareArticleList(page);
     return new Promise<Array<Article>>((resolve, reject) => {
       if (res.isSuccessWithData()) {
-        let list = res.data.datas;
+        let list = res.getDataOrThrow().datas;
         resolve(list);
       } else {
         reject();
@@ -79,7 +79,7 @@ export struct Square {
                     this.data = data;
                     resolve('刷新成功');
                   },
-                  (error) => {
+                  () => {
                     resolve('刷新失败');
                   }
                 )
@@ -99,7 +99,7 @@ export struct Square {
                         resolve('没有更多了');
                       }
                     },
-                    (error) => {
+                    () => {
                       resolve('加载失败');
                     }
                   )

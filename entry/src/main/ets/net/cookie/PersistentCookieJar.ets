@@ -28,7 +28,7 @@ export default class PersistentCookieJar implements CookieJar {
     })
   }
 
-  saveFromResponse(url: uri.URI, cookies: Cookie[]) {
+  saveFromResponse(url: uri.URI, cookies: Cookie[]): void {
     cookies.forEach((cookie) => {
       this.cache.set(cookie.createCookieKey(), cookie);
     })
@@ -66,7 +66,7 @@ export default class PersistentCookieJar implements CookieJar {
     return validCookies;
   }
 
-  clear() {
+  clear(): void {
     this.cache.clear();
     this.persistor.clear();
   }

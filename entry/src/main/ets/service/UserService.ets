@@ -3,6 +3,7 @@ import promptAction from '@ohos.promptAction';
 import router from '@ohos.router';
 import EntryContext from '../common/EntryContext';
 import Api from '../net/Api';
+import JSON from '@ohmos/json-bigint';
 
 export default class UserService {
   private static instance: UserService
@@ -28,8 +29,7 @@ export default class UserService {
     this.preferences = await dataPreferences.getPreferences(context, 'top.wangchenyan.wanharmony.user');
     let json = await this.preferences.get(this.key, "");
     if (json) {
-      let user = new User();
-      Object.assign(user, JSON.parse(json as string));
+      let user: User = JSON.parse(json)
       this.user = user;
       this.notifyObserver();
       this.updateUser();
@@ -72,14 +72,14 @@ export default class UserService {
     }
   }
 
-  getUser(): User {
+  getUser(): User | undefined {
     return this.user;
   }
 
   setUser(user?: User) {
     this.user = user;
     if (user) {
-      this.preferences?.put(this.key, JSON.stringify(user));
+      this.preferences?.put(this.key, JSON.stringify(user, undefined, undefined));
     } else {
       this.preferences?.delete(this.key);
     }
@@ -92,15 +92,19 @@ export default class UserService {
       let res = await Api.get().getUserInfo()
       return new Promise<User>((resolve, reject) => {
         if (res.isSuccessWithData()) {
-          let user = this.user;
-          this.user.coinCount = res.data.coinCount;
-          this.user.level = res.data.level;
-          this.user.rank = res.data.rank;
+          let user = this.user!!;
+          user.coinCount = res.getDataOrThrow().coinCount;
+          user.level = res.getDataOrThrow().level;
+          user.rank = res.getDataOrThrow().rank;
           this.setUser(user);
-          resolve(this.user);
+          resolve(user);
         } else {
           reject(res.errorMsg);
         }
+      })
+    } else {
+      return new Promise<User>((resolve, reject) => {
+        reject()
       })
     }
   }

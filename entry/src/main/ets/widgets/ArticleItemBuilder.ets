@@ -1,10 +1,10 @@
-import router from '@ohos.router'
-import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article'
+import router from '@ohos.router';
+import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article';
 
 @Component
 export struct ArticleItemBuilder {
-  article: Article;
-  onCollectClick: (Article) => void;
+  article: Article = new Article();
+  onCollectClick?: (article: Article) => void;
 
   build() {
     Column() {

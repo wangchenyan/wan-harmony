@@ -6,10 +6,10 @@ import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
 
 class UserInfo {
-  name: string
-  level: string
-  rank: string
-  point: string
+  name: string = ""
+  level: string = ""
+  rank: string = ""
+  point: string = ""
 }
 
 @Component

@@ -35,7 +35,7 @@ struct CollectList {
           this.loadState = LoadState.SUCCESS;
         }
       },
-      (error) => {
+      () => {
         this.loadState = LoadState.FAIL;
       })
   }
@@ -44,7 +44,7 @@ struct CollectList {
     let res = await Api.get().getCollectList(page);
     return new Promise<Array<Article>>((resolve, reject) => {
       if (res.isSuccessWithData()) {
-        let list = res.data.datas;
+        let list = res.getDataOrThrow().datas;
         list.forEach((item) => {
           item.collect = true;
         })
@@ -82,7 +82,7 @@ struct CollectList {
                     this.data = data;
                     resolve('刷新成功');
                   },
-                  (error) => {
+                  () => {
                     resolve('刷新失败');
                   }
                 )
@@ -102,7 +102,7 @@ struct CollectList {
                         resolve('没有更多了');
                       }
                     },
-                    (error) => {
+                    () => {
                       resolve('加载失败');
                     }
                   )

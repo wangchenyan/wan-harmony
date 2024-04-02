@@ -8,7 +8,7 @@ import { LoadState, PageLoading } from '../widgets/PageLoading';
 
 @Component
 export struct WechatTab {
-  authorId: number;
+  authorId: number = 0;
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State data: Array<Article> = [];
@@ -35,7 +35,7 @@ export struct WechatTab {
             this.loadState = LoadState.SUCCESS;
           }
         },
-        (error) => {
+        () => {
           this.loadState = LoadState.FAIL;
         })
     } else {
@@ -47,7 +47,7 @@ export struct WechatTab {
     let res = await Api.get().getWeChatArticleList(this.authorId, page);
     return new Promise<Array<Article>>((resolve, reject) => {
       if (res.isSuccessWithData()) {
-        let list = res.data.datas;
+        let list = res.getDataOrThrow().datas;
         resolve(list);
       } else {
         reject();
@@ -85,7 +85,7 @@ export struct WechatTab {
                         resolve('没有更多了');
                       }
                     },
-                    (error) => {
+                    () => {
                       resolve('加载失败');
                     }
                   )

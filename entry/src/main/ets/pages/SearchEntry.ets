@@ -4,6 +4,7 @@ import Api from '../net/Api'
 import { HotKey } from '../net/model/Search'
 import Preferences from '../common/Preferences'
 import { toast } from '../common/Toast'
+import { SearchResultParams } from './SearchResult'
 
 @Entry
 @Component
@@ -17,7 +18,7 @@ struct SearchEntry {
     this.historyKeys = await Preferences.get(getContext()).getSearchHistory()
     let res = await Api.get().getSearchHotKey()
     if (res.isSuccessWithData()) {
-      this.hotKeys = res.data;
+      this.hotKeys = res.getDataOrThrow();
     }
   }
 
@@ -38,9 +39,7 @@ struct SearchEntry {
     Preferences.get(getContext()).putSearchHistory(historyKeys);
     router.pushUrl({
       url: 'pages/SearchResult',
-      params: {
-        keyword: this.keyword
-      }
+      params: new SearchResultParams(this.keyword)
     });
   }
 

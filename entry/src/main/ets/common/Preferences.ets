@@ -8,7 +8,7 @@ const KEY_SELECTED_TREE_ID_2 = "selected_tree_id_2";
 export default class Preferences {
   private static instance: Preferences;
   private context: Context
-  private preferences: dataPreferences.Preferences;
+  private preferences?: dataPreferences.Preferences;
 
   private constructor(context: Context) {
     this.context = context;
@@ -16,7 +16,7 @@ export default class Preferences {
 
   async getSearchHistory(): Promise<Array<string>> {
     await this.checkInit();
-    let json = await this.preferences.get(KEY_SEARCH_HISTORY, "")
+    let json = await this.preferences?.get(KEY_SEARCH_HISTORY, "")
     return new Promise<Array<string>>((resolve, reject) => {
       if (json) {
         resolve(JSON.parse(json.toString()))
@@ -28,15 +28,15 @@ export default class Preferences {
 
   putSearchHistory(historyKeys: Array<string>) {
     this.checkInit().then((v) => {
-      this.preferences.put(KEY_SEARCH_HISTORY, JSON.stringify(historyKeys))
-      this.preferences.flush()
+      this.preferences?.put(KEY_SEARCH_HISTORY, JSON.stringify(historyKeys))
+      this.preferences?.flush()
     })
   }
 
   async getSelectedTreeId(): Promise<Pair<number, number>> {
     await this.checkInit();
-    let id1 = await this.preferences.get(KEY_SELECTED_TREE_ID_1, 0);
-    let id2 = await this.preferences.get(KEY_SELECTED_TREE_ID_2, 0);
+    let id1 = await this.preferences?.get(KEY_SELECTED_TREE_ID_1, 0);
+    let id2 = await this.preferences?.get(KEY_SELECTED_TREE_ID_2, 0);
     return new Promise<Pair<number, number>>((resolve, reject) => {
       if (typeof id1 === "number" && id1 > 0 && typeof id2 === "number" && id2 > 0) {
         resolve({
@@ -52,9 +52,9 @@ export default class Preferences {
 
   putSelectedTreeId(treeId1: number, treeId2: number) {
     this.checkInit().then((v) => {
-      this.preferences.put(KEY_SELECTED_TREE_ID_1, treeId1);
-      this.preferences.put(KEY_SELECTED_TREE_ID_2, treeId2);
-      this.preferences.flush()
+      this.preferences?.put(KEY_SELECTED_TREE_ID_1, treeId1);
+      this.preferences?.put(KEY_SELECTED_TREE_ID_2, treeId2);
+      this.preferences?.flush()
     });
   }
 

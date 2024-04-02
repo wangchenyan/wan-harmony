@@ -52,7 +52,7 @@ struct Index {
       .then((v) => {
         this.isPermissionGrant = true;
       })
-      .catch((err) => {
+      .catch(() => {
         this.isPermissionGrant = false;
       })
   }

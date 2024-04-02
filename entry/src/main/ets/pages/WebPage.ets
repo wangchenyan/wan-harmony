@@ -6,7 +6,7 @@ import { TitleLayout } from '../widgets/TitleLayout';
 @Component
 export struct WebPage {
   private webController: web_webview.WebviewController = new web_webview.WebviewController()
-  private url: string = router.getParams()['url']
+  private url: string = (router.getParams() as WebPageParams).url
   @State title: string = "加载中…"
   @State progress: number = 0
 
@@ -38,11 +38,11 @@ export struct WebPage {
           .domStorageAccess(true)
           .databaseAccess(true)
           .mixedMode(MixedMode.All)
-          .onTitleReceive(({title}) => {
-            this.title = title
+          .onTitleReceive((event) => {
+            this.title = event?.title ?? ""
           })
-          .onProgressChange(({newProgress}) => {
-            this.progress = newProgress
+          .onProgressChange((event) => {
+            this.progress = event?.newProgress ?? 0
           })
         if (this.progress != 100) {
           Progress({ value: this.progress, total: 100, type: ProgressType.Linear })
@@ -54,5 +54,13 @@ export struct WebPage {
     }
     .width('100%')
     .height('100%')
+  }
+}
+
+export class WebPageParams {
+  url: string = ""
+
+  constructor(url: string) {
+    this.url = url;
   }
 }

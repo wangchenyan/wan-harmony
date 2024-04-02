@@ -1,4 +1,4 @@
-import uri from '@ohos.uri'
+import uri from '@ohos.uri';
 
 /**
  * Cookie 对象，参考 OkHttp 中 Cookie 结构
@@ -26,6 +26,21 @@ export default class Cookie {
   isExpired(): boolean {
     let nowTime = Date.now() / 1000;
     return this.expiresAt < nowTime;
+  }
+
+  static fromJson(json: string): Cookie | undefined {
+    if (json.length === 0) return undefined;
+    let temp: Cookie | undefined = JSON.parse(json);
+    if (temp === undefined) return undefined;
+    let cookie = new Cookie();
+    cookie.name = temp.name;
+    cookie.value = temp.value;
+    cookie.expiresAt = temp.expiresAt;
+    cookie.domain = temp.domain;
+    cookie.path = temp.path;
+    cookie.httpOnly = temp.httpOnly;
+    cookie.persistent = temp.persistent;
+    return cookie;
   }
 
   private static domainMatch(urlHost: string, domain: string): boolean {
