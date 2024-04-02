@@ -18,6 +18,7 @@ export default class EntryAbility extends UIAbility {
 
     let windowClass = await windowStage.getMainWindow();
     hilog.info(0x0000, this.tag, 'Succeeded in obtaining the main window. Data: ' + JSON.stringify(windowClass));
+    windowClass.setWindowLayoutFullScreen(true);
     WindowUtils.init(windowClass);
 
     let data = await windowStage.loadContent('pages/Index');

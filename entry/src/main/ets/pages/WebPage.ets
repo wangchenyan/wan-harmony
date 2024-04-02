@@ -10,12 +10,12 @@ export struct WebPage {
   @State title: string = "加载中…"
   @State progress: number = 0
 
-  onBackPress() {
+  onBackPress(): boolean | void {
     if (this.webController.accessBackward()) {
       this.webController.backward()
-    } else {
-      router.back()
+      return true;
     }
+    return false;
   }
 
   build() {
@@ -23,7 +23,11 @@ export struct WebPage {
       TitleLayout({
         title: $title,
         onBack: () => {
-          this.onBackPress()
+          if (this.webController.accessBackward()) {
+            this.webController.backward()
+          } else {
+            router.back()
+          }
         }
       })
       Stack({ alignContent: Alignment.Top }) {
