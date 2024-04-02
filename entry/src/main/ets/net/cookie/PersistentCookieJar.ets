@@ -7,24 +7,14 @@ import KVCookiePersistor from './KVCookiePersistor';
 
 export default class PersistentCookieJar implements CookieJar {
   private tag = "PersistentCookieJar";
-  private isInit = false;
   private cache: HashMap<string, Cookie> = new HashMap();
   private persistor: CookiePersistor;
 
   constructor(context: Context) {
     this.persistor = new KVCookiePersistor(context);
-  }
-
-  async init(): Promise<void> {
-    if (!this.isInit) {
-      let cookies = await this.persistor.loadAll();
-      cookies.forEach((cookie) => {
-        this.cache.set(cookie.createCookieKey(), cookie);
-      })
-      this.isInit = true;
-    }
-    return new Promise<void>((resolve, reject) => {
-      resolve();
+    let cookies = this.persistor.loadAll();
+    cookies.forEach((cookie) => {
+      this.cache.set(cookie.createCookieKey(), cookie);
     })
   }
 

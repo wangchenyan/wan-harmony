@@ -23,7 +23,6 @@ function parseUri(url: string): uri.URI {
 }
 
 async function requestSync<T>(path: string, method: http.RequestMethod, extraData?: Object): Promise<Response<T>> {
-  await cookieJar.init();
   return new Promise<Response<T>>((resolve, reject) => {
     let headers = new Headers();
     let url = BASE_URL + path;

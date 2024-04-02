@@ -1,7 +1,7 @@
 import Cookie from './Cookie';
 
 export default interface CookiePersistor {
-  loadAll(): Promise<Cookie[]>;
+  loadAll(): Cookie[];
 
   saveAll(cookies: Array<Cookie>): void;
 

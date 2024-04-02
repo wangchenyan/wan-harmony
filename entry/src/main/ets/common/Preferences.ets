@@ -1,70 +1,70 @@
 import dataPreferences from '@ohos.data.preferences';
+import JSON from '@ohmos/json-bigint';
+import { User } from '../service/UserService';
 import { Pair } from './Structs';
 
-const KEY_SEARCH_HISTORY: string = "search_history";
+const PREFERENCES_NAME = "top.wangchenyan.wanharmony"
+const KEY_USER_INFO = "user_info";
+const KEY_SEARCH_HISTORY = "search_history";
 const KEY_SELECTED_TREE_ID_1 = "selected_tree_id_1";
 const KEY_SELECTED_TREE_ID_2 = "selected_tree_id_2";
 
 export default class Preferences {
   private static instance: Preferences;
-  private context: Context
-  private preferences?: dataPreferences.Preferences;
+  private preferences: dataPreferences.Preferences;
 
   private constructor(context: Context) {
-    this.context = context;
+    this.preferences = dataPreferences.getPreferencesSync(context, {
+      name: PREFERENCES_NAME
+    });
   }
 
-  async getSearchHistory(): Promise<Array<string>> {
-    await this.checkInit();
-    let json = await this.preferences?.get(KEY_SEARCH_HISTORY, "")
-    return new Promise<Array<string>>((resolve, reject) => {
-      if (json) {
-        resolve(JSON.parse(json.toString()))
-      } else {
-        resolve([])
-      }
-    })
+  getUser(): User | undefined {
+    let json = this.preferences.getSync(KEY_USER_INFO, "");
+    if (json) {
+      let user: User = JSON.parse(json)
+      return user;
+    } else {
+      return undefined;
+    }
+  }
+
+  putUser(user?: User) {
+    if (user) {
+      this.preferences.putSync(KEY_USER_INFO, JSON.stringify(user, undefined, undefined));
+    } else {
+      this.preferences.deleteSync(KEY_USER_INFO);
+    }
+    this.preferences.flush();
+  }
+
+  getSearchHistory(): Array<string> {
+    return this.preferences.getSync(KEY_SEARCH_HISTORY, []) as Array<string>;
   }
 
   putSearchHistory(historyKeys: Array<string>) {
-    this.checkInit().then((v) => {
-      this.preferences?.put(KEY_SEARCH_HISTORY, JSON.stringify(historyKeys))
-      this.preferences?.flush()
-    })
+    this.preferences.putSync(KEY_SEARCH_HISTORY, historyKeys)
+    this.preferences.flush()
   }
 
-  async getSelectedTreeId(): Promise<Pair<number, number>> {
-    await this.checkInit();
-    let id1 = await this.preferences?.get(KEY_SELECTED_TREE_ID_1, 0);
-    let id2 = await this.preferences?.get(KEY_SELECTED_TREE_ID_2, 0);
-    return new Promise<Pair<number, number>>((resolve, reject) => {
-      if (typeof id1 === "number" && id1 > 0 && typeof id2 === "number" && id2 > 0) {
-        resolve({
-          first: id1, second: id2
-        });
-      } else {
-        resolve({
-          first: 0, second: 0
-        });
-      }
-    });
+  getSelectedTreeId(): Pair<number, number> {
+    let id1 = this.preferences.getSync(KEY_SELECTED_TREE_ID_1, 0) as number;
+    let id2 = this.preferences.getSync(KEY_SELECTED_TREE_ID_2, 0) as number;
+    if (id1 > 0 && id2 > 0) {
+      return {
+        first: id1, second: id2
+      };
+    } else {
+      return {
+        first: 0, second: 0
+      };
+    }
   }
 
   putSelectedTreeId(treeId1: number, treeId2: number) {
-    this.checkInit().then((v) => {
-      this.preferences?.put(KEY_SELECTED_TREE_ID_1, treeId1);
-      this.preferences?.put(KEY_SELECTED_TREE_ID_2, treeId2);
-      this.preferences?.flush()
-    });
-  }
-
-  private async checkInit(): Promise<void> {
-    if (!this.preferences) {
-      this.preferences = await dataPreferences.getPreferences(this.context, 'top.wangchenyan.wanharmony');
-    }
-    return new Promise<void>((resolve, reject) => {
-      resolve();
-    });
+    this.preferences.putSync(KEY_SELECTED_TREE_ID_1, treeId1);
+    this.preferences.putSync(KEY_SELECTED_TREE_ID_2, treeId2);
+    this.preferences.flush()
   }
 
   static get(context: Context): Preferences {

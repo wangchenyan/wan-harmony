@@ -40,7 +40,7 @@ export struct TreeTab {
     if (res.isSuccessWithData()) {
       if (res.getDataOrThrow().length > 0) {
         this.treeList = res.getDataOrThrow();
-        let selectedIds = await Preferences.get(getContext()).getSelectedTreeId();
+        let selectedIds = Preferences.get(getContext()).getSelectedTreeId();
         let selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
         let selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
         if (selectedTree1 !== undefined && selectedTree2 !== undefined) {

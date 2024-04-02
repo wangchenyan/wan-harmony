@@ -1,15 +1,12 @@
-import dataPreferences from '@ohos.data.preferences';
 import promptAction from '@ohos.promptAction';
 import router from '@ohos.router';
 import EntryContext from '../common/EntryContext';
 import Api from '../net/Api';
-import JSON from '@ohmos/json-bigint';
+import Preferences from '../common/Preferences';
 
 export default class UserService {
   private static instance: UserService
   private tag = "UserService"
-  private key = "user_info"
-  private preferences?: dataPreferences.Preferences
   private user?: User
   private userObservers: Array<(user?: User) => void> = []
 
@@ -21,15 +18,9 @@ export default class UserService {
   }
 
   private constructor() {
-    this.init();
-  }
-
-  private async init() {
     let context = EntryContext.getContext() as Context;
-    this.preferences = await dataPreferences.getPreferences(context, 'top.wangchenyan.wanharmony.user');
-    let json = await this.preferences.get(this.key, "");
-    if (json) {
-      let user: User = JSON.parse(json)
+    let user = Preferences.get(context).getUser()
+    if (user) {
       this.user = user;
       this.notifyObserver();
       this.updateUser();
@@ -78,13 +69,9 @@ export default class UserService {
 
   setUser(user?: User) {
     this.user = user;
-    if (user) {
-      this.preferences?.put(this.key, JSON.stringify(user, undefined, undefined));
-    } else {
-      this.preferences?.delete(this.key);
-    }
-    this.preferences?.flush();
     this.notifyObserver();
+    let context = EntryContext.getContext() as Context;
+    Preferences.get(context).putUser(user);
   }
 
   async updateUser(): Promise<User> {

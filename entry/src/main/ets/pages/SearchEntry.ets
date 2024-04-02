@@ -15,7 +15,7 @@ struct SearchEntry {
   private keyword: string = ""
 
   async aboutToAppear() {
-    this.historyKeys = await Preferences.get(getContext()).getSearchHistory()
+    this.historyKeys = Preferences.get(getContext()).getSearchHistory()
     let res = await Api.get().getSearchHotKey()
     if (res.isSuccessWithData()) {
       this.hotKeys = res.getDataOrThrow();
@@ -27,7 +27,8 @@ struct SearchEntry {
       toast("请输入关键词");
       return;
     }
-    let historyKeys = this.historyKeys;
+    let historyKeys: Array<string> = [];
+    historyKeys = historyKeys.concat(this.historyKeys)
     let existIndex = historyKeys.findIndex((value) => {
       return this.keyword === value;
     })
