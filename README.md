@@ -4,6 +4,8 @@
 
 [鸿蒙即将抛弃Android，你还不来学习一下？](https://juejin.cn/post/7340307629891616808)
 
+**当前适配版本为 Harmony OS API 9，适配 API 11 [请移步](https://github.com/wangchenyan/wan-harmony/tree/api11)**
+
 ## 环境
 
 - DevEco Studio 3.1.1 Release
@@ -16,6 +18,7 @@
 - 首页、搜索
 - 体系
 - 广场
+- 体系
 - 公众号
 
 ## 截图
