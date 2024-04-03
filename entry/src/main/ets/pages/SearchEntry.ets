@@ -45,7 +45,8 @@ struct SearchEntry {
   }
 
   deleteHistory(index: number) {
-    let historyKeys = this.historyKeys;
+    let historyKeys: Array<string> = [];
+    historyKeys = historyKeys.concat(this.historyKeys)
     historyKeys.splice(index, 1);
     this.historyKeys = historyKeys;
     Preferences.get(getContext()).putSearchHistory(historyKeys);
