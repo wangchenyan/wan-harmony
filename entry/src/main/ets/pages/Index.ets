@@ -40,6 +40,7 @@ struct Index {
         }
         .layoutWeight(1)
         .scrollable(false)
+        .animationDuration(0)
         .onChange((index) => {
           this.currentIndex = index
         })
