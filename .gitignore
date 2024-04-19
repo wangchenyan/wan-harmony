@@ -9,4 +9,5 @@
 /.clang-format
 /.clang-tidy
 **/.test
+**/oh-package-lock.json5
 /Users
