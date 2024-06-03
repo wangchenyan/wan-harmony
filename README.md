@@ -4,7 +4,11 @@
 
 [鸿蒙即将抛弃Android，你还不来学习一下？](https://juejin.cn/post/7340307629891616808)
 
-**当前适配版本为 Harmony OS API 9，适配 API 11 [请移步](https://github.com/wangchenyan/wan-harmony/tree/api11)**
+**当前适配版本为 Harmony OS API 11**
+
+**适配 API 9 [请移步](https://github.com/wangchenyan/wan-harmony)**
+
+**适配 API 12 [请移步](https://github.com/wangchenyan/wan-harmony/tree/api12)**
 
 ## 环境
 
