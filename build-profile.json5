@@ -1,20 +1,6 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "/Users/bytedance/.ohos/config/auto_debug_wan-harmony_top.wangchenyan.wanharmony_7940970.cer",
-          "storePassword": "0000001BF4ED3C48690DAB6E09EF68170800C5C5EEA97A2D9A2238FBF0E64973C49AEE14549DAA3729EDDD",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001BD9F896E463D45C9C1ABCC5B013E8105B9E5D98E360D8352CF44306B712FAD6BA1C094F1A7A7CE9",
-          "profile": "/Users/bytedance/.ohos/config/auto_debug_wan-harmony_top.wangchenyan.wanharmony_7940970.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/bytedance/.ohos/config/auto_debug_wan-harmony_top.wangchenyan.wanharmony_7940970.p12"
-        }
-      }
-    ],
+    "signingConfigs": [],
     "compileSdkVersion": 9,
     "compatibleSdkVersion": 9,
     "products": [
