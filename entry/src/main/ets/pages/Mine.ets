@@ -73,8 +73,8 @@ export struct Mine {
 
   build() {
     PageLoading({
-      loadState: $loadState,
-      showLoading: $showLoading
+      loadState: this.loadState,
+      showLoading: this.showLoading
     }) {
       Column() {
         TitleLayout({

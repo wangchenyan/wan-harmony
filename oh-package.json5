@@ -9,7 +9,6 @@
   "main": "",
   "version": "1.0.0",
   "dependencies": {
-    "@ohos/materialprogressbar": "^2.0.2",
     "@ohos/pulltorefresh": "^2.0.5",
     "@ohmos/json-bigint": "^1.0.0"
   },

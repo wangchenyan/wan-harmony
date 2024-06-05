@@ -78,8 +78,8 @@ export struct Home {
 
   build() {
     PageLoading({
-      loadState: $loadState,
-      showLoading: $showLoading,
+      loadState: this.loadState,
+      showLoading: this.showLoading,
       onReload: () => {
         hilog.debug(0, this.tag, "onReload");
         this.loadData();

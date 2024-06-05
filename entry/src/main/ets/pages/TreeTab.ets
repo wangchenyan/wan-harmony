@@ -96,8 +96,8 @@ export struct TreeTab {
         isJustShowStatusBar: true
       })
       PageLoading({
-        loadState: $loadStateTree,
-        showLoading: $showLoading,
+        loadState: this.loadStateTree,
+        showLoading: this.showLoading,
         onReload: () => {
           hilog.debug(0, this.tag, "onReloadTree");
           this.loadTreeData();
@@ -141,8 +141,8 @@ export struct TreeTab {
           }
           Stack() {
             PageLoading({
-              loadState: $loadStateArticle,
-              showLoading: $showLoading,
+              loadState: this.loadStateArticle,
+              showLoading: this.showLoading,
               onReload: () => {
                 hilog.debug(0, this.tag, "onReloadArticle");
                 this.loadArticleData();
