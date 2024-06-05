@@ -7,12 +7,12 @@ export default class WindowUtils {
   static windowHeight: number = 0
 
   static init(windowClass: window.Window) {
-    let windowRect = windowClass.getWindowProperties().windowRect;
+    const windowRect = windowClass.getWindowProperties().windowRect;
     WindowUtils.windowWidth = windowRect.width;
     WindowUtils.windowHeight = windowRect.height;
-    let statusBarAvoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+    const statusBarAvoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
     WindowUtils.statusBarHeight = statusBarAvoidArea.topRect.height;
-    let navigationBarAvoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
+    const navigationBarAvoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
     WindowUtils.navigationBarHeight = navigationBarAvoidArea.bottomRect.height;
   }
 }

@@ -10,8 +10,8 @@ export struct Wechat {
   @State title: string = "公众号";
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
-  @State authors: Array<WeChatAuthor> = []
-  private tag = "Square"
+  @State authors: WeChatAuthor[] = []
+  private static TAG = "Square"
 
   aboutToAppear() {
     this.loadData();
@@ -37,14 +37,14 @@ export struct Wechat {
   build() {
     Column() {
       TitleLayout({
-        title: $title,
+        title: this.title,
         showBack: false,
       })
       PageLoading({
         loadState: this.loadState,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReload");
+          hilog.debug(0, Wechat.TAG, "onReload");
           this.loadData();
         }
       }) {

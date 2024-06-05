@@ -3,7 +3,7 @@ import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import CollectUtils from '../common/CollectUtils';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
 
@@ -12,8 +12,8 @@ export struct Square {
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State title: string = "广场";
-  @State data: Array<Article> = [];
-  private tag = "Square"
+  @State data: Article[] = [];
+  private static TAG = "Square"
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
   private nextPage: number = 1;
@@ -39,29 +39,27 @@ export struct Square {
       })
   }
 
-  private async loadDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().getSquareArticleList(page);
-    return new Promise<Array<Article>>((resolve, reject) => {
-      if (res.isSuccessWithData()) {
-        let list = res.getDataOrThrow().datas;
-        resolve(list);
-      } else {
-        reject();
-      }
-    })
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getSquareArticleList(page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 
   build() {
     Column() {
       TitleLayout({
-        title: $title,
+        title: this.title,
         showBack: false,
       })
       PageLoading({
         loadState: this.loadState,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReload");
+          hilog.debug(0, Square.TAG, "onReload");
           this.loadData();
         }
       }) {
@@ -71,7 +69,7 @@ export struct Square {
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
             customList: () => {
-              this.getListView();
+              this.listViewBuilder();
             },
             onRefresh: () => {
               return new Promise<string>((resolve, reject) => {
@@ -123,11 +121,11 @@ export struct Square {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
-          ArticleItemBuilder({
+          ArticleItemComponent({
             article: item,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article)

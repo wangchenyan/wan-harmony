@@ -26,7 +26,7 @@ export default class OpenHarmonyTestRunner implements TestRunner {
         abilityDelegatorArguments = AbilityDelegatorRegistry.getArguments()
         abilityDelegator = AbilityDelegatorRegistry.getAbilityDelegator()
         var testAbilityName = abilityDelegatorArguments.bundleName + '.TestAbility'
-        let lMonitor = {
+        const lMonitor = {
             abilityName: testAbilityName,
             onAbilityCreate: onAbilityCreateCallback,
         };

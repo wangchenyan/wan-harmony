@@ -1,9 +1,9 @@
 import { Article } from './Article'
 
 export class Tree {
-  articleList: Array<Article> = []
+  articleList: Article[] = []
   author: string = ""
-  children: Array<Tree> = []
+  children: Tree[] = []
   courseId: number = 0
   cover: string = ""
   desc: string = ""

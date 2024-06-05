@@ -6,7 +6,7 @@ import { Article } from '../net/model/Article';
 import { Tree } from '../net/model/Tree';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import CollectUtils from '../common/CollectUtils';
 import Preferences from '../common/Preferences';
 
@@ -16,12 +16,12 @@ export struct TreeTab {
   @State loadStateArticle: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State title: string = "体系";
-  @State treeList: Array<Tree> = [];
-  @State data: Array<Article> = [];
+  @State treeList: Tree[] = [];
+  @State data: Article[] = [];
   @State selectTrees: Pair<Tree | undefined, Tree | undefined> = { first: undefined, second: undefined };
   @State selectTreeTemp?: Tree = undefined;
   @State showSelectLayer: boolean = false;
-  private tag = "Tree"
+  private static TAG = "Tree"
   private treeScroll1: Scroller = new Scroller();
   private treeScroll2: Scroller = new Scroller();
   private articleScroller: Scroller = new Scroller();
@@ -36,13 +36,13 @@ export struct TreeTab {
 
   private async loadTreeData() {
     this.loadStateTree = LoadState.LOADING
-    let res = await Api.get().getTree();
+    const res = await Api.get().getTree();
     if (res.isSuccessWithData()) {
       if (res.getDataOrThrow().length > 0) {
         this.treeList = res.getDataOrThrow();
-        let selectedIds = Preferences.get(getContext()).getSelectedTreeId();
-        let selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
-        let selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
+        const selectedIds = Preferences.get(getContext()).getSelectedTreeId();
+        const selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
+        const selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
         if (selectedTree1 !== undefined && selectedTree2 !== undefined) {
           this.selectTreeTemp = selectedTree1;
           this.selectTrees = { first: selectedTree1, second: selectedTree2 };
@@ -77,29 +77,27 @@ export struct TreeTab {
       })
   }
 
-  private async loadArticleDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().getTreeArticleList(this.selectTrees.second!!.id, page);
-    return new Promise<Array<Article>>((resolve, reject) => {
-      if (res.isSuccessWithData()) {
-        let list = res.getDataOrThrow().datas;
-        resolve(list);
-      } else {
-        reject();
-      }
-    })
+  private async loadArticleDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getTreeArticleList(this.selectTrees.second!.id, page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 
   build() {
     Column() {
       TitleLayout({
-        title: $title,
+        title: this.title,
         isJustShowStatusBar: true
       })
       PageLoading({
         loadState: this.loadStateTree,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReloadTree");
+          hilog.debug(0, TreeTab.TAG, "onReloadTree");
           this.loadTreeData();
         }
       }) {
@@ -127,11 +125,12 @@ export struct TreeTab {
                 this.showSelectLayer = true;
                 setTimeout(() => {
                   // 滚动到选中位置的前一个
-                  let selectedIndex1 = this.treeList.findIndex(item => item.id === this.selectTrees.first!!.id);
+                  const selectedIndex1 = this.treeList.findIndex(item => item.id === this.selectTrees.first!.id);
                   if (selectedIndex1 >= 0) {
                     this.treeScroll1.scrollToIndex(Math.max(selectedIndex1 - 1, 0));
                   }
-                  let selectedIndex2 = this.selectTrees.first!!.children.findIndex(item => item.id === this.selectTrees.second!!.id);
+                  const selectedIndex2 =
+                    this.selectTrees.first!.children.findIndex(item => item.id === this.selectTrees.second!.id);
                   if (selectedIndex2 >= 0) {
                     this.treeScroll2.scrollToIndex(Math.max(selectedIndex2 - 1, 0));
                   }
@@ -144,7 +143,7 @@ export struct TreeTab {
               loadState: this.loadStateArticle,
               showLoading: this.showLoading,
               onReload: () => {
-                hilog.debug(0, this.tag, "onReloadArticle");
+                hilog.debug(0, TreeTab.TAG, "onReloadArticle");
                 this.loadArticleData();
               }
             }) {
@@ -154,7 +153,7 @@ export struct TreeTab {
                   scroller: this.articleScroller,
                   refreshConfigurator: this.refreshConfig,
                   customList: () => {
-                    this.getListView();
+                    this.listViewBuilder();
                   },
                   onLoadMore: () => {
                     return new Promise<string>((resolve, reject) => {
@@ -195,8 +194,14 @@ export struct TreeTab {
                       ListItem() {
                         Text(tree.name)
                           .width('100%')
-                          .padding({ left: 12, top: 8, right: 12, bottom: 8 })
-                          .fontColor((this.selectTreeTemp!!.id === tree.id) ? $r("app.color.main") : $r("app.color.text_h1"))
+                          .padding({
+                            left: 12,
+                            top: 8,
+                            right: 12,
+                            bottom: 8
+                          })
+                          .fontColor((this.selectTreeTemp!.id === tree.id) ? $r("app.color.main") :
+                          $r("app.color.text_h1"))
                           .fontSize(14)
                           .textAlign(TextAlign.Center)
                           .backgroundColor((index % 2 === 0) ? Color.Transparent : $r("app.color.hot_key_bg"))
@@ -217,19 +222,25 @@ export struct TreeTab {
                     .backgroundColor($r("app.color.divider"))
 
                   List({ scroller: this.treeScroll2 }) {
-                    ForEach(this.selectTreeTemp!!.children, (tree: Tree, index: number) => {
+                    ForEach(this.selectTreeTemp!.children, (tree: Tree, index: number) => {
                       ListItem() {
                         Text(tree.name)
                           .width('100%')
-                          .padding({ left: 12, top: 8, right: 12, bottom: 8 })
-                          .fontColor((this.selectTrees.second!!.id === tree.id) ? $r("app.color.main") : $r("app.color.text_h1"))
+                          .padding({
+                            left: 12,
+                            top: 8,
+                            right: 12,
+                            bottom: 8
+                          })
+                          .fontColor((this.selectTrees.second!.id === tree.id) ? $r("app.color.main") :
+                          $r("app.color.text_h1"))
                           .fontSize(14)
                           .textAlign(TextAlign.Center)
                           .backgroundColor((index % 2 === 1) ? Color.Transparent : $r("app.color.hot_key_bg"))
                           .onClick((event) => {
                             this.selectTrees = { first: this.selectTreeTemp, second: tree };
                             Preferences.get(getContext())
-                              .putSelectedTreeId(this.selectTrees.first!!.id, this.selectTrees.second!!.id)
+                              .putSelectedTreeId(this.selectTrees.first!.id, this.selectTrees.second!.id)
                             this.showSelectLayer = false;
                             this.hasMore = true;
                             this.loadArticleData();
@@ -267,11 +278,11 @@ export struct TreeTab {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.articleScroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
-          ArticleItemBuilder({
+          ArticleItemComponent({
             article: item,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article)

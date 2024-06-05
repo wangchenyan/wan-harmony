@@ -2,12 +2,13 @@ import Cookie from './Cookie';
 import dataPreferences from '@ohos.data.preferences';
 import CookiePersistor from './CookiePersistor';
 import JSON from '@ohmos/json-bigint';
+import CookieUtils from './CookieUtils';
 
 const PREFERENCES_NAME = "top.wangchenyan.cookie.persistor"
 const KEY_COOKIE_KEYS = "COOKIE_KEYS";
 
 export default class KVCookiePersistor implements CookiePersistor {
-  private tag = "KVCookiePersistor";
+  private static TAG = "KVCookiePersistor";
   private preferences: dataPreferences.Preferences;
 
   constructor(context: Context) {
@@ -17,12 +18,12 @@ export default class KVCookiePersistor implements CookiePersistor {
   }
 
   loadAll(): Cookie[] {
-    let cookies: Array<Cookie> = [];
-    let keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as Array<string>
+    const cookies: Cookie[] = [];
+    const keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as string[]
     keys.forEach((key) => {
-      let value = this.preferences.getSync(key, "") as string
+      const value = this.preferences.getSync(key, "") as string
       if (value.length > 0) {
-        let cookie = Cookie.fromJson(value);
+        const cookie = CookieUtils.fromJson(value);
         if (cookie) {
           cookies.push(cookie);
         }
@@ -33,11 +34,11 @@ export default class KVCookiePersistor implements CookiePersistor {
 
   saveAll(cookies: Cookie[]) {
     cookies.forEach((cookie) => {
-      this.preferences.putSync(cookie.createCookieKey(), JSON.stringify(cookie, undefined, undefined));
+      this.preferences.putSync(CookieUtils.createCookieKey(cookie), JSON.stringify(cookie, undefined, undefined));
     });
-    let keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as Array<string>
+    const keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as string[]
     cookies.forEach((cookie) => {
-      let key = cookie.createCookieKey();
+      const key = CookieUtils.createCookieKey(cookie);
       if (keys.indexOf(key) < 0) {
         keys.push(key)
       }
@@ -47,11 +48,11 @@ export default class KVCookiePersistor implements CookiePersistor {
   }
 
   removeAll(cookies: Cookie[]) {
-    let keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as Array<string>
+    const keys = this.preferences.getSync(KEY_COOKIE_KEYS, []) as string[]
     cookies.forEach((cookie) => {
-      let key = cookie.createCookieKey();
+      const key = CookieUtils.createCookieKey(cookie);
       this.preferences.deleteSync(key);
-      let index = keys.indexOf(key);
+      const index = keys.indexOf(key);
       if (index >= 0) {
         keys.splice(index, 1);
       }

@@ -4,51 +4,52 @@ import Cookie from './Cookie';
 import CookieJar from './CookieJar';
 import CookiePersistor from './CookiePersistor';
 import KVCookiePersistor from './KVCookiePersistor';
+import CookieUtils from './CookieUtils';
 
 export default class PersistentCookieJar implements CookieJar {
-  private tag = "PersistentCookieJar";
+  private static TAG = "PersistentCookieJar";
   private cache: HashMap<string, Cookie> = new HashMap();
   private persistor: CookiePersistor;
 
   constructor(context: Context) {
     this.persistor = new KVCookiePersistor(context);
-    let cookies = this.persistor.loadAll();
+    const cookies = this.persistor.loadAll();
     cookies.forEach((cookie) => {
-      this.cache.set(cookie.createCookieKey(), cookie);
+      this.cache.set(CookieUtils.createCookieKey(cookie), cookie);
     })
   }
 
   saveFromResponse(url: uri.URI, cookies: Cookie[]): void {
     cookies.forEach((cookie) => {
-      this.cache.set(cookie.createCookieKey(), cookie);
+      this.cache.set(CookieUtils.createCookieKey(cookie), cookie);
     })
     this.persistor.saveAll(PersistentCookieJar.filterPersistentCookies(cookies));
   }
 
-  private static filterPersistentCookies(cookies: Array<Cookie>): Array<Cookie> {
+  private static filterPersistentCookies(cookies: Cookie[]): Cookie[] {
     return cookies.filter((item) => {
       return item.persistent;
     })
   }
 
   loadForRequest(url: uri.URI): Cookie[] {
-    let cookiesToRemove: Array<Cookie> = [];
-    let validCookies: Array<Cookie> = [];
+    const cookiesToRemove: Cookie[] = [];
+    const validCookies: Cookie[] = [];
 
-    let iterator: IterableIterator<Cookie> = this.cache.values();
+    const iterator: IterableIterator<Cookie> = this.cache.values();
     let result = iterator.next();
     while (!result.done) {
-      let currentCookie: Cookie = result.value;
-      if (currentCookie.isExpired()) {
+      const currentCookie: Cookie = result.value;
+      if (CookieUtils.isExpired(currentCookie)) {
         cookiesToRemove.push(currentCookie);
-      } else if (currentCookie.matches(url)) {
+      } else if (CookieUtils.matches(currentCookie, url)) {
         validCookies.push(currentCookie);
       }
       result = iterator.next();
     }
 
     cookiesToRemove.forEach((item) => {
-      this.cache.remove(item.createCookieKey());
+      this.cache.remove(CookieUtils.createCookieKey(item));
     })
 
     this.persistor.removeAll(cookiesToRemove);

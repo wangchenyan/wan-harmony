@@ -1,9 +1,10 @@
-import router from '@ohos.router'
-import WindowUtils from '../common/WindowUtils'
+import router from '@ohos.router';
+import WindowUtils from '../common/WindowUtils';
 
 @Component
 export struct TitleLayout {
-  @Link title: string;
+  @Prop
+  title: string;
   isJustShowStatusBar: boolean = false;
   showBack: boolean = true;
   onBack: () => void = () => {

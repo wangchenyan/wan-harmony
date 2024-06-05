@@ -24,12 +24,12 @@ struct Login {
       return;
     }
     this.showLoading = true;
-    let res = await Api.get().login(this.account, this.password);
+    const res = await Api.get().login(this.account, this.password);
     this.showLoading = false;
     if (res.isSuccessWithData()) {
       toast("登录成功");
       UserService.get().setUser(res.data);
-      let user = await UserService.get().updateUser();
+      const user = await UserService.get().updateUser();
       if (user) {
         router.back();
       }
@@ -46,7 +46,7 @@ struct Login {
       }) {
         Column() {
           TitleLayout({
-            title: $title
+            title: this.title
           })
           Column() {
             TextInput({
@@ -77,7 +77,7 @@ struct Login {
               .fontColor($r("app.color.white"))
               .backgroundColor($r("app.color.main"))
               .onClick((e) => {
-                this.login();
+                this.login().catch();
               })
           }
           .width('100%')

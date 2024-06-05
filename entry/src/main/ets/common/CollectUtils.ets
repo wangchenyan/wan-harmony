@@ -7,34 +7,28 @@ export default class CollectUtils {
   static async collect(article: Article, id?: number): Promise<boolean> {
     if (!UserService.get().isLogin()) {
       UserService.get().checkLogin();
-      return new Promise<boolean>((resolve, reject) => {
-        resolve(false);
-      });
+      return Promise.resolve(false);
     }
 
-    if (id === undefined) {
+    if (!id) {
       id = article.id;
     }
     if (article.collect) {
-      let res = await Api.get().unCollect(id);
+      const res = await Api.get().unCollect(id);
       if (res.isSuccess()) {
         article.collect = false;
       } else {
         toast(res.errorMsg);
       }
-      return new Promise<boolean>((resolve, reject) => {
-        resolve(res.isSuccess());
-      });
+      return Promise.resolve(res.isSuccess());
     } else {
-      let res = await Api.get().collect(id);
+      const res = await Api.get().collect(id);
       if (res.isSuccess()) {
         article.collect = true;
       } else {
         toast(res.errorMsg);
       }
-      return new Promise<boolean>((resolve, reject) => {
-        resolve(res.isSuccess());
-      });
+      return Promise.resolve(res.isSuccess());
     }
   }
 }

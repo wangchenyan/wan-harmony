@@ -21,7 +21,7 @@ export struct WebPage {
   build() {
     Column() {
       TitleLayout({
-        title: $title,
+        title: this.title,
         onBack: () => {
           if (this.webController.accessBackward()) {
             this.webController.backward()

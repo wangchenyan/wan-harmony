@@ -10,13 +10,13 @@ import { SearchResultParams } from './SearchResult'
 @Component
 struct SearchEntry {
   @State showKeyword: string = ""
-  @State hotKeys: Array<HotKey> = []
-  @State historyKeys: Array<string> = []
+  @State hotKeys: HotKey[] = []
+  @State historyKeys: string[] = []
   private keyword: string = ""
 
   async aboutToAppear() {
     this.historyKeys = Preferences.get(getContext()).getSearchHistory()
-    let res = await Api.get().getSearchHotKey()
+    const res = await Api.get().getSearchHotKey()
     if (res.isSuccessWithData()) {
       this.hotKeys = res.getDataOrThrow();
     }
@@ -27,9 +27,9 @@ struct SearchEntry {
       toast("请输入关键词");
       return;
     }
-    let historyKeys: Array<string> = [];
+    let historyKeys: string[] = [];
     historyKeys = historyKeys.concat(this.historyKeys)
-    let existIndex = historyKeys.findIndex((value) => {
+    const existIndex = historyKeys.findIndex((value) => {
       return this.keyword === value;
     })
     if (existIndex >= 0) {
@@ -45,7 +45,7 @@ struct SearchEntry {
   }
 
   deleteHistory(index: number) {
-    let historyKeys: Array<string> = [];
+    let historyKeys: string[] = [];
     historyKeys = historyKeys.concat(this.historyKeys)
     historyKeys.splice(index, 1);
     this.historyKeys = historyKeys;
@@ -110,7 +110,12 @@ struct SearchEntry {
             Text(key.name)
               .fontColor($r("app.color.text_h1"))
               .fontSize(14)
-              .padding({ left: 12, top: 6, right: 12, bottom: 6 })
+              .padding({
+                left: 12,
+                top: 6,
+                right: 12,
+                bottom: 6
+              })
               .maxLines(1)
               .backgroundColor($r("app.color.hot_key_bg"))
               .borderRadius(50)
@@ -150,7 +155,12 @@ struct SearchEntry {
                   })
               }
               .width('100%')
-              .padding({ left: 16, top: 12, right: 16, bottom: 12 })
+              .padding({
+                left: 16,
+                top: 12,
+                right: 16,
+                bottom: 12
+              })
               .onClick((event) => {
                 this.showKeyword = item;
                 this.keyword = item;

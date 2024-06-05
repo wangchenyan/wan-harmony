@@ -42,7 +42,7 @@ export struct Mine {
 
   aboutToAppear() {
     UserService.get().addUserObserver(this.userObserver);
-    let user = UserService.get().getUser();
+    const user = UserService.get().getUser();
     this.userObserver(user);
   }
 
@@ -51,7 +51,7 @@ export struct Mine {
   }
 
   async logout() {
-    let res = await promptAction.showDialog({
+    const res = await promptAction.showDialog({
       title: "提示",
       message: "确认退出登录？",
       buttons: [
@@ -78,7 +78,7 @@ export struct Mine {
     }) {
       Column() {
         TitleLayout({
-          title: $title,
+          title: this.title,
           isJustShowStatusBar: true
         })
         Column() {
@@ -94,12 +94,22 @@ export struct Mine {
               .fontColor($r("app.color.white"))
               .fontSize(15)
               .backgroundColor($r("app.color.green"))
-              .padding({ left: 4, top: 2, right: 4, bottom: 2 })
+              .padding({
+                left: 4,
+                top: 2,
+                right: 4,
+                bottom: 2
+              })
             Text("排名" + this.userInfo.rank)
               .fontColor($r("app.color.white"))
               .fontSize(15)
               .backgroundColor($r("app.color.blue"))
-              .padding({ left: 4, top: 2, right: 4, bottom: 2 })
+              .padding({
+                left: 4,
+                top: 2,
+                right: 4,
+                bottom: 2
+              })
           }
           .margin({ top: 16 })
         }

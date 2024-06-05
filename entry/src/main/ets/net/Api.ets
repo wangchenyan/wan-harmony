@@ -13,21 +13,21 @@ import { WeChatAuthor } from './model/WeChat';
 import { Tree } from './model/Tree';
 import JSON from '@ohmos/json-bigint';
 
-let TAG = "Api";
-let BASE_URL: string = "https://www.wanandroid.com";
+const TAG = "Api";
+const BASE_URL: string = "https://www.wanandroid.com";
 
-let cookieJar: CookieJar = new PersistentCookieJar(EntryContext.getContext() as Context);
+const cookieJar: CookieJar = new PersistentCookieJar(EntryContext.getContext() as Context);
 
 function parseUri(url: string): uri.URI {
   return new uri.URI(url);
 }
 
-async function requestSync<T>(path: string, method: http.RequestMethod, extraData?: Object): Promise<Response<T>> {
+async function requestSync<T>(path: string, method: http.RequestMethod, extraData?: object): Promise<Response<T>> {
   return new Promise<Response<T>>((resolve, reject) => {
-    let headers = new Headers();
-    let url = BASE_URL + path;
-    let uri = parseUri(url);
-    let cookies = cookieJar.loadForRequest(uri);
+    const headers = new Headers();
+    const url = BASE_URL + path;
+    const uri = parseUri(url);
+    const cookies = cookieJar.loadForRequest(uri);
     if (cookies.length > 0) {
       headers.cookie = CookieUtils.cookieHeader(cookies);
     }
@@ -38,8 +38,9 @@ async function requestSync<T>(path: string, method: http.RequestMethod, extraDat
         extraData = new Object();
       }
     }
-    let httpRequest = http.createHttp();
-    hilog.info(0, TAG, `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData, undefined, undefined));
+    const httpRequest = http.createHttp();
+    hilog.info(0, TAG,
+      `start request, path: ${path}, method: ${method}, extraData: ` + JSON.stringify(extraData, undefined, undefined));
     httpRequest.request(
       url,
       {
@@ -49,16 +50,16 @@ async function requestSync<T>(path: string, method: http.RequestMethod, extraDat
         extraData: extraData
       },
       (err, data) => {
-        let res = new Response<T>()
+        const res = new Response<T>()
         if (!err && data.responseCode === 200) {
           cookieJar.saveFromResponse(uri, CookieUtils.parseHttpRequestCookies(data.cookies))
           if (data.resultType === http.HttpDataType.STRING) {
-            let result: Response<T> = JSON.parse(data.result);
+            const result: Response<T> = JSON.parse(data.result);
             res.errorCode = result.errorCode;
             res.errorMsg = result.errorMsg;
             res.data = result.data;
           } else if (data.resultType === http.HttpDataType.OBJECT) {
-            let result = data.result as Response<T>;
+            const result = data.result as Response<T>;
             res.errorCode = result.errorCode;
             res.errorMsg = result.errorMsg;
             res.data = result.data;
@@ -104,11 +105,11 @@ export default class Api {
     return requestSync(`/article/list/${page}/json`, http.RequestMethod.GET);
   }
 
-  async getTopArticle(): Promise<Response<Array<Article>>> {
+  async getTopArticle(): Promise<Response<Article[]>> {
     return requestSync("/article/top/json", http.RequestMethod.GET);
   }
 
-  async getHomeBanner(): Promise<Response<Array<HomeBannerData>>> {
+  async getHomeBanner(): Promise<Response<HomeBannerData[]>> {
     return requestSync("/banner/json", http.RequestMethod.GET);
   }
 
@@ -116,7 +117,7 @@ export default class Api {
     return requestSync(`/user_article/list/${page}/json`, http.RequestMethod.GET);
   }
 
-  async getWeChatAuthorList(): Promise<Response<Array<WeChatAuthor>>> {
+  async getWeChatAuthorList(): Promise<Response<WeChatAuthor[]>> {
     return requestSync("/wxarticle/chapters/json", http.RequestMethod.GET)
   }
 
@@ -136,7 +137,7 @@ export default class Api {
     return requestSync("/lg/coin/userinfo/json", http.RequestMethod.GET);
   }
 
-  async getSearchHotKey(): Promise<Response<Array<HotKey>>> {
+  async getSearchHotKey(): Promise<Response<HotKey[]>> {
     return requestSync("/hotkey/json", http.RequestMethod.GET)
   }
 
@@ -144,11 +145,11 @@ export default class Api {
     return requestSync(`/article/query/${page}/json?k=${encodeURIComponent(keyword)}`, http.RequestMethod.POST)
   }
 
-  async collect(id: number): Promise<Response<Object>> {
+  async collect(id: number): Promise<Response<object>> {
     return requestSync(`/lg/collect/${id}/json`, http.RequestMethod.POST)
   }
 
-  async unCollect(id: number): Promise<Response<Object>> {
+  async unCollect(id: number): Promise<Response<object>> {
     return requestSync(`/lg/uncollect_originId/${id}/json`, http.RequestMethod.POST)
   }
 
@@ -156,7 +157,7 @@ export default class Api {
     return requestSync(`/lg/collect/list/${page}/json`, http.RequestMethod.GET)
   }
 
-  async getTree(): Promise<Response<Array<Tree>>> {
+  async getTree(): Promise<Response<Tree[]>> {
     return requestSync(`/tree/json`, http.RequestMethod.GET)
   }
 

@@ -2,9 +2,9 @@ import uri from '@ohos.uri';
 import Cookie from './Cookie';
 
 export default interface CookieJar {
-  saveFromResponse(url: uri.URI, cookies: Array<Cookie>): void;
+  saveFromResponse(url: uri.URI, cookies: Cookie[]): void;
 
-  loadForRequest(url: uri.URI): Array<Cookie>;
+  loadForRequest(url: uri.URI): Cookie[];
 
   clear(): void;
 }

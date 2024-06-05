@@ -4,7 +4,7 @@ import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import CollectUtils from '../common/CollectUtils';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
 
@@ -14,8 +14,8 @@ struct SearchResult {
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State title: string = "";
-  @State data: Array<Article> = [];
-  private tag = "SearchResult"
+  @State data: Article[] = [];
+  private static TAG = "SearchResult"
   private keyword: string = ""
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
@@ -23,7 +23,7 @@ struct SearchResult {
   private hasMore: boolean = true;
 
   aboutToAppear() {
-    let params = router.getParams() as SearchResultParams;
+    const params = router.getParams() as SearchResultParams;
     this.keyword = params.keyword;
     this.title = this.keyword;
     this.refreshConfig.setHasRefresh(false);
@@ -46,19 +46,17 @@ struct SearchResult {
       })
   }
 
-  private async loadDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().search(this.keyword, page);
-    return new Promise<Array<Article>>((resolve, reject) => {
-      if (res.isSuccessWithData()) {
-        let list = res.getDataOrThrow().datas;
-        list.forEach((item) => {
-          item.title = this.removeHtmlTags(item.title);
-        })
-        resolve(list);
-      } else {
-        reject();
-      }
-    })
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().search(this.keyword, page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      list.forEach((item) => {
+        item.title = this.removeHtmlTags(item.title);
+      })
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 
   private removeHtmlTags(text: string): string {
@@ -71,13 +69,13 @@ struct SearchResult {
   build() {
     Column() {
       TitleLayout({
-        title: $title
+        title: this.title
       })
       PageLoading({
         loadState: this.loadState,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReload");
+          hilog.debug(0, SearchResult.TAG, "onReload");
           this.loadData();
         }
       }) {
@@ -87,7 +85,7 @@ struct SearchResult {
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
             customList: () => {
-              this.getListView();
+              this.listViewBuilder();
             },
             onLoadMore: () => {
               return new Promise<string>((resolve, reject) => {
@@ -125,11 +123,11 @@ struct SearchResult {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
-          ArticleItemBuilder({
+          ArticleItemComponent({
             article: item,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article)

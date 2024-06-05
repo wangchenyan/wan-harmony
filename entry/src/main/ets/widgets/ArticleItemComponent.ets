@@ -2,7 +2,7 @@ import router from '@ohos.router';
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article';
 
 @Component
-export struct ArticleItemBuilder {
+export struct ArticleItemComponent {
   article: Article = new Article();
   onCollectClick?: (article: Article) => void;
 
@@ -21,7 +21,10 @@ export struct ArticleItemBuilder {
               radius: 3
             })
             .padding({
-              left: 2, top: 1, right: 2, bottom: 1
+              left: 2,
+              top: 1,
+              right: 2,
+              bottom: 1
             })
           Divider()
             .width(8)
@@ -74,7 +77,12 @@ export struct ArticleItemBuilder {
       .width('100%')
     }
     .width('100%')
-    .padding({ left: 16, top: 10, right: 16, bottom: 10 })
+    .padding({
+      left: 16,
+      top: 10,
+      right: 16,
+      bottom: 10
+    })
     .onClick((e) => {
       router.pushUrl({
         url: 'pages/WebPage',

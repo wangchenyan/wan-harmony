@@ -1,6 +1,6 @@
 export class ArticleList {
   curPage: number = 0
-  datas: Array<Article> = []
+  datas: Article[] = []
   offset: number = 0
   over: boolean = false
   pageCount: number = 0
@@ -36,7 +36,7 @@ export class Article {
   shareUser: string = ""
   superChapterId: number = 0
   superChapterName: string = ""
-  tags: Array<ArticleTag> = []
+  tags: ArticleTag[] = []
   title: string = ""
   type: number = 0
   userId: number = 0

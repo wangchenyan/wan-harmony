@@ -5,23 +5,25 @@ import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { PullToRefresh } from '@ohos/pulltorefresh'
 import { TitleLayout } from '../widgets/TitleLayout'
 import router from '@ohos.router'
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder'
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent'
 import CollectUtils from '../common/CollectUtils'
+
+declare type HomeItemData = Article | HomeBannerData[];
 
 @Component
 export struct Home {
-  @State data: Array<Object> = [];
+  @State data: HomeItemData[] = [];
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State bannerPosition: number = 0;
   @State title: string = "首页";
-  private tag = "Home";
+  private static TAG = "Home";
   private scroller: Scroller = new Scroller();
   private nextPage: number = 1;
   private hasMore: boolean = true;
 
   async aboutToAppear() {
-    hilog.info(0, this.tag, "aboutToAppear")
+    hilog.info(0, Home.TAG, "aboutToAppear")
     this.loadData();
   }
 
@@ -41,39 +43,37 @@ export struct Home {
       })
   }
 
-  async loadDataByPage(page: number): Promise<Array<Object>> {
-    return new Promise<Array<Object>>(async (resolve, reject) => {
-      if (page === 0) {
-        let bannerRes = await Api.get().getHomeBanner();
-        let topRes = await Api.get().getTopArticle();
-        let articleRes = await Api.get().getHomeArticleList(page);
+  async loadDataByPage(page: number): Promise<HomeItemData[]> {
+    if (page === 0) {
+      const bannerRes = await Api.get().getHomeBanner();
+      const topRes = await Api.get().getTopArticle();
+      const articleRes = await Api.get().getHomeArticleList(page);
 
-        if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
-          let bannerList = bannerRes.getDataOrThrow();
-          let articleList: Array<Article> = [];
-          topRes.getDataOrThrow().forEach((item) => {
-            let tag = new ArticleTag();
-            tag.name = "置顶";
-            item.tags = [tag].concat(item.tags);
-            articleList.push(item);
-          })
-          articleList = articleList.concat(articleRes.getDataOrThrow().datas);
-          let dataList: Array<Object> = [];
-          dataList.push(bannerList);
-          dataList = dataList.concat(articleList);
-          resolve(dataList);
-        } else {
-          reject();
-        }
+      if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
+        const bannerList = bannerRes.getDataOrThrow();
+        let articleList: Article[] = [];
+        topRes.getDataOrThrow().forEach((item) => {
+          const tag = new ArticleTag();
+          tag.name = "置顶";
+          item.tags = [tag].concat(item.tags);
+          articleList.push(item);
+        })
+        articleList = articleList.concat(articleRes.getDataOrThrow().datas);
+        let dataList: HomeItemData[] = [];
+        dataList.push(bannerList);
+        dataList = dataList.concat(articleList);
+        return Promise.resolve(dataList);
       } else {
-        let articleRes = await Api.get().getHomeArticleList(page);
-        if (articleRes.isSuccessWithData()) {
-          resolve(articleRes.getDataOrThrow().datas);
-        } else {
-          reject();
-        }
+        return Promise.reject();
       }
-    })
+    } else {
+      const articleRes = await Api.get().getHomeArticleList(page);
+      if (articleRes.isSuccessWithData()) {
+        return Promise.resolve(articleRes.getDataOrThrow().datas);
+      } else {
+        return Promise.reject();
+      }
+    }
   }
 
   build() {
@@ -81,13 +81,13 @@ export struct Home {
       loadState: this.loadState,
       showLoading: this.showLoading,
       onReload: () => {
-        hilog.debug(0, this.tag, "onReload");
+        hilog.debug(0, Home.TAG, "onReload");
         this.loadData();
       }
     }) {
       Column() {
         TitleLayout({
-          title: $title,
+          title: this.title,
           showBack: false,
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
@@ -100,7 +100,7 @@ export struct Home {
           data: $data,
           scroller: this.scroller,
           customList: () => {
-            this.getListView();
+            this.listViewBuilder();
           },
           onRefresh: () => {
             return new Promise<string>((resolve, reject) => {
@@ -149,19 +149,19 @@ export struct Home {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.scroller }) {
-      ForEach(this.data, (item: object) => {
+      ForEach(this.data, (item: HomeItemData) => {
         ListItem() {
           if (item instanceof Array) {
-            BannerBuilder({
+            BannerComponent({
               bannerList: item
             })
           } else {
-            ArticleItemBuilder({
+            ArticleItemComponent({
               article: item as Article,
               onCollectClick: async (article: Article) => {
-                let success = await CollectUtils.collect(article)
+                const success = await CollectUtils.collect(article)
                 if (success) {
                   this.data = this.data.map(item => item);
                 }
@@ -185,16 +185,16 @@ export struct Home {
 }
 
 @Component
-struct BannerBuilder {
+struct BannerComponent {
   private swiperController: SwiperController = new SwiperController()
   @State private bannerPosition: number = 0
-  bannerList: Array<HomeBannerData> = []
+  bannerList: HomeBannerData[] = []
 
   build() {
     Stack() {
       Swiper(this.swiperController) {
         ForEach(this.bannerList, (item: HomeBannerData) => {
-          this.BannerItemBuilder(item)
+          this.bannerItemBuilder(item)
         })
       }
       .autoPlay(true)
@@ -213,7 +213,7 @@ struct BannerBuilder {
   }
 
   @Builder
-  BannerItemBuilder(data: HomeBannerData) {
+  private bannerItemBuilder(data: HomeBannerData) {
     Stack({ alignContent: Alignment.Bottom }) {
       Image(data.imagePath)
         .objectFit(ImageFit.Cover)
@@ -222,7 +222,10 @@ struct BannerBuilder {
       Text(data.title)
         .width('100%')
         .padding({
-          left: 16, top: 6, right: 16, bottom: 6
+          left: 16,
+          top: 6,
+          right: 16,
+          bottom: 6
         })
         .fontColor($r("app.color.white"))
         .fontSize(15)

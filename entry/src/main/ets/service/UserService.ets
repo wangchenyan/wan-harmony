@@ -6,9 +6,9 @@ import Preferences from '../common/Preferences';
 
 export default class UserService {
   private static instance: UserService
-  private tag = "UserService"
+  private static TAG = "UserService"
   private user?: User
-  private userObservers: Array<(user?: User) => void> = []
+  private userObservers: ((user?: User) => void)[] = []
 
   static get(): UserService {
     if (UserService.instance === undefined) {
@@ -18,12 +18,12 @@ export default class UserService {
   }
 
   private constructor() {
-    let context = EntryContext.getContext() as Context;
-    let user = Preferences.get(context).getUser()
+    const context = EntryContext.getContext() as Context;
+    const user = Preferences.get(context).getUser()
     if (user) {
       this.user = user;
       this.notifyObserver();
-      this.updateUser();
+      this.updateUser().catch();
     }
   }
 
@@ -70,29 +70,25 @@ export default class UserService {
   setUser(user?: User) {
     this.user = user;
     this.notifyObserver();
-    let context = EntryContext.getContext() as Context;
+    const context = EntryContext.getContext() as Context;
     Preferences.get(context).putUser(user);
   }
 
   async updateUser(): Promise<User> {
     if (this.isLogin()) {
-      let res = await Api.get().getUserInfo()
-      return new Promise<User>((resolve, reject) => {
-        if (res.isSuccessWithData()) {
-          let user = this.user!!;
-          user.coinCount = res.getDataOrThrow().coinCount;
-          user.level = res.getDataOrThrow().level;
-          user.rank = res.getDataOrThrow().rank;
-          this.setUser(user);
-          resolve(user);
-        } else {
-          reject(res.errorMsg);
-        }
-      })
+      const res = await Api.get().getUserInfo()
+      if (res.isSuccessWithData()) {
+        const user = this.user!!;
+        user.coinCount = res.getDataOrThrow().coinCount;
+        user.level = res.getDataOrThrow().level;
+        user.rank = res.getDataOrThrow().rank;
+        this.setUser(user);
+        return Promise.resolve(user);
+      } else {
+        return Promise.reject(res.errorMsg);
+      }
     } else {
-      return new Promise<User>((resolve, reject) => {
-        reject()
-      })
+      return Promise.reject()
     }
   }
 
@@ -103,7 +99,7 @@ export default class UserService {
   }
 
   removeUserObserver(observer: (user?: User) => void) {
-    let index = this.userObservers.indexOf(observer);
+    const index = this.userObservers.indexOf(observer);
     if (index >= 0) {
       this.userObservers.splice(index, 1);
     }
@@ -127,9 +123,9 @@ export class User {
   id: number = 0
   username: string = ""
   nickname: string = ""
-  chapterTops: Array<Object> = []
+  chapterTops: object[] = []
   coinCount: number = 0
-  collectIds: Array<number> = []
+  collectIds: number[] = []
   email: string = ""
   icon: string = ""
   level: string = ""

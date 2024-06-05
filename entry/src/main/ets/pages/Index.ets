@@ -9,7 +9,7 @@ import WindowUtils from '../common/WindowUtils'
 @Entry
 @Component
 struct Index {
-  private tag = "Index"
+  private static TAG = "Index"
   private tabsController = new TabsController()
   @State currentIndex: number = 0
   @State isPermissionGrant: boolean = false

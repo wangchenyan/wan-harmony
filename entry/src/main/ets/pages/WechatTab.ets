@@ -3,7 +3,7 @@ import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import CollectUtils from '../common/CollectUtils';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 
 @Component
@@ -11,8 +11,8 @@ export struct WechatTab {
   authorId: number = 0;
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
-  @State data: Array<Article> = [];
-  private tag = "WechatTab"
+  @State data: Article[] = [];
+  private static TAG = "WechatTab"
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
   private nextPage: number = 1;
@@ -43,16 +43,14 @@ export struct WechatTab {
     }
   }
 
-  private async loadDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().getWeChatArticleList(this.authorId, page);
-    return new Promise<Array<Article>>((resolve, reject) => {
-      if (res.isSuccessWithData()) {
-        let list = res.getDataOrThrow().datas;
-        resolve(list);
-      } else {
-        reject();
-      }
-    })
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getWeChatArticleList(this.authorId, page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 
   build() {
@@ -61,7 +59,7 @@ export struct WechatTab {
         loadState: this.loadState,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReload");
+          hilog.debug(0, WechatTab.TAG, "onReload");
           this.loadData();
         }
       }) {
@@ -71,7 +69,7 @@ export struct WechatTab {
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
             customList: () => {
-              this.getListView();
+              this.listViewBuilder();
             },
             onLoadMore: () => {
               return new Promise<string>((resolve, reject) => {
@@ -109,11 +107,11 @@ export struct WechatTab {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
-          ArticleItemBuilder({
+          ArticleItemComponent({
             article: item,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article)

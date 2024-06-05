@@ -20,9 +20,9 @@ export default class Preferences {
   }
 
   getUser(): User | undefined {
-    let json = this.preferences.getSync(KEY_USER_INFO, "");
+    const json = this.preferences.getSync(KEY_USER_INFO, "");
     if (json) {
-      let user: User = JSON.parse(json)
+      const user: User = JSON.parse(json)
       return user;
     } else {
       return undefined;
@@ -38,18 +38,18 @@ export default class Preferences {
     this.preferences.flush();
   }
 
-  getSearchHistory(): Array<string> {
-    return this.preferences.getSync(KEY_SEARCH_HISTORY, []) as Array<string>;
+  getSearchHistory(): string[] {
+    return this.preferences.getSync(KEY_SEARCH_HISTORY, []) as string[];
   }
 
-  putSearchHistory(historyKeys: Array<string>) {
+  putSearchHistory(historyKeys: string[]) {
     this.preferences.putSync(KEY_SEARCH_HISTORY, historyKeys)
     this.preferences.flush()
   }
 
   getSelectedTreeId(): Pair<number, number> {
-    let id1 = this.preferences.getSync(KEY_SELECTED_TREE_ID_1, 0) as number;
-    let id2 = this.preferences.getSync(KEY_SELECTED_TREE_ID_2, 0) as number;
+    const id1 = this.preferences.getSync(KEY_SELECTED_TREE_ID_1, 0) as number;
+    const id2 = this.preferences.getSync(KEY_SELECTED_TREE_ID_2, 0) as number;
     if (id1 > 0 && id2 > 0) {
       return {
         first: id1, second: id2

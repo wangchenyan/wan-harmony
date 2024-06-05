@@ -4,7 +4,7 @@ import Api from '../net/Api';
 import { Article } from '../net/model/Article';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
-import { ArticleItemBuilder } from '../widgets/ArticleItemBuilder';
+import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import CollectUtils from '../common/CollectUtils';
 
 @Entry
@@ -13,8 +13,8 @@ struct CollectList {
   @State loadState: LoadState = LoadState.LOADING;
   @State showLoading: boolean = false;
   @State title: string = "我的收藏";
-  @State data: Array<Article> = [];
-  private tag = "CollectList"
+  @State data: Article[] = [];
+  private static TAG = "CollectList"
   private scroller: Scroller = new Scroller();
   private refreshConfig = new PullToRefreshConfigurator();
   private nextPage: number = 1;
@@ -40,31 +40,29 @@ struct CollectList {
       })
   }
 
-  private async loadDataByPage(page: number): Promise<Array<Article>> {
-    let res = await Api.get().getCollectList(page);
-    return new Promise<Array<Article>>((resolve, reject) => {
-      if (res.isSuccessWithData()) {
-        let list = res.getDataOrThrow().datas;
-        list.forEach((item) => {
-          item.collect = true;
-        })
-        resolve(list);
-      } else {
-        reject();
-      }
-    })
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getCollectList(page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      list.forEach((item) => {
+        item.collect = true;
+      })
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 
   build() {
     Column() {
       TitleLayout({
-        title: $title
+        title: this.title
       })
       PageLoading({
         loadState: this.loadState,
         showLoading: this.showLoading,
         onReload: () => {
-          hilog.debug(0, this.tag, "onReload");
+          hilog.debug(0, CollectList.TAG, "onReload");
           this.loadData();
         }
       }) {
@@ -74,7 +72,7 @@ struct CollectList {
             scroller: this.scroller,
             refreshConfigurator: this.refreshConfig,
             customList: () => {
-              this.getListView();
+              this.listViewBuilder();
             },
             onRefresh: () => {
               return new Promise<string>((resolve, reject) => {
@@ -126,11 +124,11 @@ struct CollectList {
   }
 
   @Builder
-  private getListView() {
+  private listViewBuilder() {
     List({ scroller: this.scroller }) {
       ForEach(this.data, (item: Article) => {
         ListItem() {
-          ArticleItemBuilder({
+          ArticleItemComponent({
             article: item,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article, article.originId)
