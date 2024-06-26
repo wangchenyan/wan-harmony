@@ -13,8 +13,9 @@
 ## 环境
 
 - DevEco Studio NEXT Developer Beta1
-  - Build Version: 5.0.3.200
+  - Build Version: 5.0.3.402
 - Harmony OS Api 12
+- hvigor 5.0.0
 
 ## 功能
 
