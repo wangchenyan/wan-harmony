@@ -6,14 +6,10 @@
 
 **当前适配版本为 Harmony OS API 12**
 
-**适配 API 9 [请移步](https://github.com/wangchenyan/wan-harmony)**
-
-**适配 API 11 [请移步](https://github.com/wangchenyan/wan-harmony/tree/api11)**
-
 ## 环境
 
 - DevEco Studio NEXT Developer Beta1
-  - Build Version: 5.0.3.402
+  - Build Version: 5.0.3.403
 - Harmony OS Api 12
 - hvigor 5.0.0
 
