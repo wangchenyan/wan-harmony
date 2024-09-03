@@ -1,12 +1,12 @@
-import router from '@ohos.router'
 import WindowUtils from '../common/WindowUtils'
 import Api from '../net/Api'
 import { HotKey } from '../net/model/Search'
 import Preferences from '../common/Preferences'
 import { toast } from '../common/Toast'
-import { SearchResultParams } from './SearchResult'
+import { navRouter } from '../router/NavRouter'
+import { Routes } from '../Routes'
+import { RouteParams } from '../router/RouteInfo'
 
-@Entry
 @Component
 struct SearchEntry {
   @State showKeyword: string = ""
@@ -38,10 +38,10 @@ struct SearchEntry {
     historyKeys.unshift(this.keyword);
     this.historyKeys = historyKeys;
     Preferences.get(getContext()).putSearchHistory(historyKeys);
-    router.pushUrl({
-      url: 'pages/SearchResult',
-      params: new SearchResultParams(this.keyword)
-    });
+    navRouter.open()
+      .targetUrl(Routes.SearchResult)
+      .params('keyword', this.keyword)
+      .start()
   }
 
   deleteHistory(index: number) {
@@ -65,7 +65,7 @@ struct SearchEntry {
           .fillColor($r("app.color.text_h1"))
           .objectFit(ImageFit.Contain)
           .onClick((event) => {
-            router.back();
+            navRouter.open().back();
           })
         TextInput({
           placeholder: "关键词以空格隔开",
@@ -179,4 +179,12 @@ struct SearchEntry {
     .width('100%')
     .height('100%')
   }
+}
+
+@Builder
+export function searchEntryNavDesBuilder(params: RouteParams) {
+  NavDestination() {
+    SearchEntry()
+  }
+  .hideTitleBar(true)
 }

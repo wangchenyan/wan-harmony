@@ -1,14 +1,14 @@
 import hilog from '@ohos.hilog';
-import router from '@ohos.router';
 import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import CollectUtils from '../common/CollectUtils';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
+import { navRouter } from '../router/NavRouter';
+import { RouteParams } from '../router/RouteInfo';
 import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
 
-@Entry
 @Component
 struct SearchResult {
   @State loadState: LoadState = LoadState.LOADING;
@@ -23,8 +23,10 @@ struct SearchResult {
   private hasMore: boolean = true;
 
   aboutToAppear() {
-    const params = router.getParams() as SearchResultParams;
-    this.keyword = params.keyword;
+    this.keyword = navRouter.open(this.queryNavDestinationInfo())
+      .getRouteInfo()
+      .currentParams
+      .get('keyword') as string;
     this.title = this.keyword;
     this.refreshConfig.setHasRefresh(false);
     this.loadData();
@@ -154,10 +156,10 @@ struct SearchResult {
   }
 }
 
-export class SearchResultParams {
-  keyword: string = ""
-
-  constructor(keyword: string) {
-    this.keyword = keyword;
+@Builder
+export function searchResultNavDesBuilder(params: RouteParams) {
+  NavDestination() {
+    SearchResult()
   }
+  .hideTitleBar(true)
 }

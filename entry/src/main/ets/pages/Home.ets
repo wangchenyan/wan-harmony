@@ -4,9 +4,10 @@ import { Article, ArticleTag, HomeBannerData, } from '../net/model/Article'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { PullToRefresh } from '@ohos/pulltorefresh'
 import { TitleLayout } from '../widgets/TitleLayout'
-import router from '@ohos.router'
 import { ArticleItemComponent } from '../widgets/ArticleItemComponent'
 import CollectUtils from '../common/CollectUtils'
+import { navRouter } from '../router/NavRouter'
+import { Routes } from '../Routes'
 
 declare type HomeItemData = Article | HomeBannerData[];
 
@@ -91,9 +92,9 @@ export struct Home {
           showBack: false,
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
-            router.pushUrl({
-              url: 'pages/SearchEntry'
-            });
+            navRouter.open()
+              .targetUrl(Routes.SearchEntry)
+              .start()
           }
         })
         PullToRefresh({
@@ -235,12 +236,10 @@ struct BannerComponent {
     .width('100%')
     .height('100%')
     .onClick((event) => {
-      router.pushUrl({
-        url: 'pages/WebPage',
-        params: {
-          url: data.url
-        }
-      });
+      navRouter.open()
+        .targetUrl(Routes.Web)
+        .params('url', data.url)
+        .start()
     })
   }
 }

@@ -1,11 +1,11 @@
-import router from '@ohos.router'
 import { toast } from '../common/Toast'
 import Api from '../net/Api'
+import { navRouter } from '../router/NavRouter'
+import { RouteParams } from '../router/RouteInfo'
 import UserService from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
 
-@Entry
 @Component
 struct Login {
   @State loadState: LoadState = LoadState.SUCCESS;
@@ -31,7 +31,9 @@ struct Login {
       UserService.get().setUser(res.data);
       const user = await UserService.get().updateUser();
       if (user) {
-        router.back();
+        navRouter.open()
+          .params('success', true)
+          .back();
       }
     } else {
       toast(res.errorMsg);
@@ -91,4 +93,12 @@ struct Login {
     .width('100%')
     .height('100%')
   }
+}
+
+@Builder
+export function loginNavDesBuilder(params: RouteParams) {
+  NavDestination() {
+    Login()
+  }
+  .hideTitleBar(true)
 }

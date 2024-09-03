@@ -1,7 +1,7 @@
-import promptAction from '@ohos.promptAction'
-import WindowUtils from './WindowUtils'
+import promptAction from '@ohos.promptAction';
+import WindowUtils from './WindowUtils';
 
-export function toast(message: string | Resource) {
+export function toast(message: ResourceStr | undefined) {
   if (message) {
     const bottom = WindowUtils.windowHeight > 0 ? (WindowUtils.windowHeight / 2 + 'px') : undefined;
     promptAction.showToast({

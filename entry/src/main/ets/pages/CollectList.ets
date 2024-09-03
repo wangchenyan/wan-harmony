@@ -6,8 +6,8 @@ import { LoadState, PageLoading } from '../widgets/PageLoading';
 import { TitleLayout } from '../widgets/TitleLayout';
 import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import CollectUtils from '../common/CollectUtils';
+import { RouteParams } from '../router/RouteInfo';
 
-@Entry
 @Component
 struct CollectList {
   @State loadState: LoadState = LoadState.LOADING;
@@ -153,4 +153,12 @@ struct CollectList {
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
   }
+}
+
+@Builder
+export function collectListNavDesBuilder(params: RouteParams) {
+  NavDestination() {
+    CollectList()
+  }
+  .hideTitleBar(true)
 }

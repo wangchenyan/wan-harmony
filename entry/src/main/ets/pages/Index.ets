@@ -5,6 +5,9 @@ import { Wechat } from './Wechat'
 import OHPermission from '../common/OHPermission'
 import { TreeTab } from './TreeTab'
 import WindowUtils from '../common/WindowUtils'
+import { navRouter } from '../router/NavRouter'
+import { registerRoutes } from '../Routes'
+import { RouteParams } from '../router/RouteInfo'
 
 @Entry
 @Component
@@ -14,7 +17,28 @@ struct Index {
   @State currentIndex: number = 0
   @State isPermissionGrant: boolean = false
 
+  aboutToAppear() {
+    registerRoutes()
+    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'])
+      .then((v) => {
+        this.isPermissionGrant = true;
+      })
+      .catch(() => {
+        this.isPermissionGrant = false;
+      })
+  }
+
   build() {
+    Navigation(navRouter.pathStack) {
+      this.tabContainerBuilder()
+    }
+    .mode(NavigationMode.Stack)
+    .navDestination(this.navDestination)
+    .hideTitleBar(true)
+  }
+
+  @Builder
+  tabContainerBuilder() {
     Column() {
       if (this.isPermissionGrant) {
         Tabs({ barPosition: BarPosition.End, controller: this.tabsController }) {
@@ -56,16 +80,8 @@ struct Index {
         .height(WindowUtils.navigationBarHeight + 'px')
         .backgroundColor($r("app.color.navi_bar_bg"))
     }
-  }
-
-  aboutToAppear() {
-    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'])
-      .then((v) => {
-        this.isPermissionGrant = true;
-      })
-      .catch(() => {
-        this.isPermissionGrant = false;
-      })
+    .width('100%')
+    .height('100%')
   }
 
   @Builder
@@ -86,5 +102,10 @@ struct Index {
       this.currentIndex = targetIndex
       this.tabsController.changeIndex(targetIndex)
     })
+  }
+
+  @Builder
+  navDestination(url: string, params: RouteParams) {
+    navRouter.getNavDesBuilder(url).builder(params)
   }
 }

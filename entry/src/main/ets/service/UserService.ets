@@ -1,8 +1,9 @@
 import promptAction from '@ohos.promptAction';
-import router from '@ohos.router';
 import EntryContext from '../common/EntryContext';
 import Api from '../net/Api';
 import Preferences from '../common/Preferences';
+import { navRouter } from '../router/NavRouter';
+import { Routes } from '../Routes';
 
 export default class UserService {
   private static instance: UserService
@@ -36,7 +37,7 @@ export default class UserService {
 
   checkLogin(onLogin?: () => void) {
     if (this.isLogin()) {
-      if (onLogin != undefined) {
+      if (onLogin) {
         onLogin()
       }
     } else {
@@ -55,9 +56,14 @@ export default class UserService {
         ]
       }).then((resp) => {
         if (resp.index === 0) {
-          router.pushUrl({
-            url: 'pages/Login'
-          })
+          navRouter.open()
+            .targetUrl(Routes.Login)
+            .onPopListener((params) => {
+              if (params.get('success') && onLogin) {
+                onLogin()
+              }
+            })
+            .start()
         }
       })
     }

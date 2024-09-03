@@ -1,9 +1,10 @@
-import router from '@ohos.router'
 import promptAction from '@ohos.promptAction'
 import Api from '../net/Api'
 import UserService, { User } from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
+import { navRouter } from '../router/NavRouter'
+import { Routes } from '../Routes'
 
 class UserInfo {
   name: string = ""
@@ -159,7 +160,9 @@ export struct Mine {
         .backgroundColor($r("app.color.white"))
         .onClick((event) => {
           UserService.get().checkLogin(() => {
-            router.pushUrl({ url: "pages/CollectList" })
+            navRouter.open()
+              .targetUrl(Routes.CollectList)
+              .start()
           })
         })
 

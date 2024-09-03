@@ -1,5 +1,6 @@
-import router from '@ohos.router';
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article';
+import { navRouter } from '../router/NavRouter';
+import { Routes } from '../Routes';
 
 @Component
 export struct ArticleItemComponent {
@@ -84,12 +85,10 @@ export struct ArticleItemComponent {
       bottom: 10
     })
     .onClick((e) => {
-      router.pushUrl({
-        url: 'pages/WebPage',
-        params: {
-          url: this.article.link
-        }
-      });
+      navRouter.open()
+        .targetUrl(Routes.Web)
+        .params('url', this.article.link)
+        .start()
     })
   }
 }

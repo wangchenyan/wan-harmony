@@ -1,5 +1,5 @@
-import router from '@ohos.router';
 import WindowUtils from '../common/WindowUtils';
+import { navRouter } from '../router/NavRouter';
 
 @Component
 export struct TitleLayout {
@@ -8,7 +8,7 @@ export struct TitleLayout {
   isJustShowStatusBar: boolean = false;
   showBack: boolean = true;
   onBack: () => void = () => {
-    router.back();
+    navRouter.open().back();
   }
   menuIcon?: Resource;
   onMenuClick?: () => void;
