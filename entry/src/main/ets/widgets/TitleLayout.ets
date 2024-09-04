@@ -1,5 +1,5 @@
 import WindowUtils from '../common/WindowUtils';
-import { navRouter } from '../router/NavRouter';
+import { HRouter } from '../router/HRouter';
 
 @Component
 export struct TitleLayout {
@@ -8,7 +8,7 @@ export struct TitleLayout {
   isJustShowStatusBar: boolean = false;
   showBack: boolean = true;
   onBack: () => void = () => {
-    navRouter.open().back();
+    HRouter.with().back();
   }
   menuIcon?: Resource;
   onMenuClick?: () => void;

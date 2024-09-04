@@ -1,6 +1,6 @@
 import { toast } from '../common/Toast'
 import Api from '../net/Api'
-import { navRouter } from '../router/NavRouter'
+import { HRouter } from '../router/HRouter'
 import { RouteParams } from '../router/RouteInfo'
 import UserService from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
@@ -85,7 +85,7 @@ struct Login {
       UserService.get().setUser(res.data);
       const user = await UserService.get().updateUser();
       if (user) {
-        navRouter.open()
+        HRouter.with()
           .params('success', true)
           .back();
       }

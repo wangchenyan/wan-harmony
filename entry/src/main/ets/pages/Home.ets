@@ -6,7 +6,7 @@ import { PullToRefresh } from '@ohos/pulltorefresh'
 import { TitleLayout } from '../widgets/TitleLayout'
 import { ArticleItemComponent } from '../widgets/ArticleItemComponent'
 import CollectUtils from '../common/CollectUtils'
-import { navRouter } from '../router/NavRouter'
+import { HRouter } from '../router/HRouter'
 import { Routes } from '../Routes'
 
 declare type HomeItemData = Article | HomeBannerData[];
@@ -43,8 +43,8 @@ export struct Home {
           showBack: false,
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
-            navRouter.open()
-              .targetUrl(Routes.SearchEntry)
+            HRouter.with()
+              .url(Routes.SearchEntry)
               .start()
           }
         })
@@ -236,8 +236,8 @@ struct BannerComponent {
     .width('100%')
     .height('100%')
     .onClick((event) => {
-      navRouter.open()
-        .targetUrl(Routes.Web)
+      HRouter.with()
+        .url(Routes.Web)
         .params('url', data.url)
         .start()
     })

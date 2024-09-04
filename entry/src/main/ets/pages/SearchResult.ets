@@ -3,7 +3,7 @@ import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import CollectUtils from '../common/CollectUtils';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
-import { navRouter } from '../router/NavRouter';
+import { HRouter } from '../router/HRouter';
 import { RouteParams } from '../router/RouteInfo';
 import { ArticleItemComponent } from '../widgets/ArticleItemComponent';
 import { LoadState, PageLoading } from '../widgets/PageLoading';
@@ -23,10 +23,8 @@ struct SearchResult {
   private hasMore: boolean = true;
 
   aboutToAppear() {
-    this.keyword = navRouter.open(this.queryNavDestinationInfo())
-      .getRouteInfo()
-      .currentParams
-      .get('keyword') as string;
+    let routeParams = HRouter.with(this.queryNavDestinationInfo()).getCurrentParams()
+    this.keyword = routeParams.get('keyword') as string;
     this.title = this.keyword;
     this.refreshConfig.setHasRefresh(false);
     this.loadData();

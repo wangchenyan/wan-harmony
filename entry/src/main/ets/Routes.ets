@@ -3,7 +3,7 @@ import { loginNavDesBuilder } from './pages/Login'
 import { searchEntryNavDesBuilder } from './pages/SearchEntry'
 import { searchResultNavDesBuilder } from './pages/SearchResult'
 import { webPageNavDesBuilder } from './pages/WebPage'
-import { navRouter } from './router/NavRouter'
+import { HRouter } from './router/HRouter'
 
 export enum Routes {
   Login = '/login',
@@ -14,9 +14,9 @@ export enum Routes {
 }
 
 export function registerRoutes() {
-  navRouter.register(Routes.Login, wrapBuilder(loginNavDesBuilder))
-  navRouter.register(Routes.Web, wrapBuilder(webPageNavDesBuilder))
-  navRouter.register(Routes.SearchEntry, wrapBuilder(searchEntryNavDesBuilder))
-  navRouter.register(Routes.SearchResult, wrapBuilder(searchResultNavDesBuilder))
-  navRouter.register(Routes.CollectList, wrapBuilder(collectListNavDesBuilder))
+  HRouter.register(Routes.Login, wrapBuilder(loginNavDesBuilder))
+  HRouter.register(Routes.Web, wrapBuilder(webPageNavDesBuilder))
+  HRouter.register(Routes.SearchEntry, wrapBuilder(searchEntryNavDesBuilder))
+  HRouter.register(Routes.SearchResult, wrapBuilder(searchResultNavDesBuilder))
+  HRouter.register(Routes.CollectList, wrapBuilder(collectListNavDesBuilder))
 }

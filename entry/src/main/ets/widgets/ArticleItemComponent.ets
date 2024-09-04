@@ -1,5 +1,5 @@
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article';
-import { navRouter } from '../router/NavRouter';
+import { HRouter } from '../router/HRouter';
 import { Routes } from '../Routes';
 
 @Component
@@ -85,8 +85,8 @@ export struct ArticleItemComponent {
       bottom: 10
     })
     .onClick((e) => {
-      navRouter.open()
-        .targetUrl(Routes.Web)
+      HRouter.with()
+        .url(Routes.Web)
         .params('url', this.article.link)
         .start()
     })

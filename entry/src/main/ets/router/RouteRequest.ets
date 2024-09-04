@@ -1,7 +1,7 @@
-import { navRouter } from './NavRouter'
+import { RouteExecutor } from './RouteExecutor'
 import { RouteInfo, RouteParams } from './RouteInfo'
 
-export class NavRoute {
+export class RouteRequest {
   private readonly routeInfo: RouteInfo = new RouteInfo()
 
   constructor(navDesInfo?: NavDestinationInfo) {
@@ -14,36 +14,36 @@ export class NavRoute {
     return this.routeInfo
   }
 
-  targetUrl(url: string): NavRoute {
+  getCurrentParams(): RouteParams {
+    return this.routeInfo.currentParams
+  }
+
+  url(url: string): RouteRequest {
     this.routeInfo.targetUrl = url
     return this
   }
 
-  params(key: string, value: Object): NavRoute {
+  params(key: string, value: Object): RouteRequest {
     this.routeInfo.targetParams.set(key, value)
     return this
   }
 
-  animated(value: boolean): NavRoute {
+  animated(value: boolean): RouteRequest {
     this.routeInfo.animated = value
     return this
   }
 
-  moveToTop(value: boolean): NavRoute {
+  moveToTop(value: boolean): RouteRequest {
     this.routeInfo.moveToTop = value
     return this
   }
 
-  onPopListener(listener: (params: RouteParams) => void): NavRoute {
-    this.routeInfo.onPopListener = listener
-    return this
-  }
-
-  start() {
-    navRouter.start(this.routeInfo)
+  start(onPop?: (params: RouteParams) => void) {
+    this.routeInfo.onPop = onPop
+    RouteExecutor.start(this.routeInfo)
   }
 
   back() {
-    navRouter.back(this.routeInfo)
+    RouteExecutor.back(this.routeInfo)
   }
 }

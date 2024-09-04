@@ -1,6 +1,6 @@
 import web_webview from '@ohos.web.webview';
 import { TitleLayout } from '../widgets/TitleLayout';
-import { navRouter } from '../router/NavRouter';
+import { HRouter } from '../router/HRouter';
 import { RouteParams } from '../router/RouteInfo';
 
 @Component
@@ -19,7 +19,7 @@ export struct WebPage {
             if (this.webController.accessBackward()) {
               this.webController.backward()
             } else {
-              navRouter.open().back();
+              HRouter.with().back();
             }
           }
         })

@@ -3,7 +3,7 @@ import Api from '../net/Api'
 import UserService, { User } from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
 import { TitleLayout } from '../widgets/TitleLayout'
-import { navRouter } from '../router/NavRouter'
+import { HRouter } from '../router/HRouter'
 import { Routes } from '../Routes'
 
 class UserInfo {
@@ -139,8 +139,8 @@ export struct Mine {
         .backgroundColor($r("app.color.white"))
         .onClick((event) => {
           UserService.get().checkLogin(() => {
-            navRouter.open()
-              .targetUrl(Routes.CollectList)
+            HRouter.with()
+              .url(Routes.CollectList)
               .start()
           })
         })

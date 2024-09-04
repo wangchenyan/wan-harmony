@@ -5,7 +5,7 @@ import { Wechat } from './Wechat'
 import OHPermission from '../common/OHPermission'
 import { TreeTab } from './TreeTab'
 import WindowUtils from '../common/WindowUtils'
-import { navRouter } from '../router/NavRouter'
+import { HRouter } from '../router/HRouter'
 import { registerRoutes } from '../Routes'
 import { RouteParams } from '../router/RouteInfo'
 
@@ -29,10 +29,10 @@ struct Index {
   }
 
   build() {
-    Navigation(navRouter.pathStack) {
+    Navigation(HRouter.pathStack) {
       this.tabContainerBuilder()
     }
-    .mode(NavigationMode.Stack)
+    .mode(NavigationMode.Auto)
     .navDestination(this.navDestination)
     .hideTitleBar(true)
   }
@@ -106,6 +106,6 @@ struct Index {
 
   @Builder
   navDestination(url: string, params: RouteParams) {
-    navRouter.getNavDesBuilder(url).builder(params)
+    HRouter.getNavDesBuilder(url)!.builder(params)
   }
 }

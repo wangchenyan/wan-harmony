@@ -2,7 +2,7 @@ import promptAction from '@ohos.promptAction';
 import EntryContext from '../common/EntryContext';
 import Api from '../net/Api';
 import Preferences from '../common/Preferences';
-import { navRouter } from '../router/NavRouter';
+import { HRouter } from '../router/HRouter';
 import { Routes } from '../Routes';
 
 export default class UserService {
@@ -56,14 +56,13 @@ export default class UserService {
         ]
       }).then((resp) => {
         if (resp.index === 0) {
-          navRouter.open()
-            .targetUrl(Routes.Login)
-            .onPopListener((params) => {
+          HRouter.with()
+            .url(Routes.Login)
+            .start((params) => {
               if (params.get('success') && onLogin) {
                 onLogin()
               }
             })
-            .start()
         }
       })
     }

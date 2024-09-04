@@ -4,7 +4,7 @@ export class RouteInfo {
   targetParams: RouteParams = new Map()
   animated: boolean = true
   moveToTop: boolean = false
-  onPopListener?: (params: RouteParams) => void
+  onPop?: (params: RouteParams) => void
 }
 
 export type RouteParams = Map<string, Object>

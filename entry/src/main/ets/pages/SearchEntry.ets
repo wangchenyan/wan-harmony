@@ -3,7 +3,7 @@ import Api from '../net/Api'
 import { HotKey } from '../net/model/Search'
 import Preferences from '../common/Preferences'
 import { toast } from '../common/Toast'
-import { navRouter } from '../router/NavRouter'
+import { HRouter } from '../router/HRouter'
 import { Routes } from '../Routes'
 import { RouteParams } from '../router/RouteInfo'
 
@@ -35,7 +35,7 @@ struct SearchEntry {
           .fillColor($r("app.color.text_h1"))
           .objectFit(ImageFit.Contain)
           .onClick((event) => {
-            navRouter.open().back();
+            HRouter.with().back();
           })
         TextInput({
           placeholder: "关键词以空格隔开",
@@ -166,8 +166,8 @@ struct SearchEntry {
     historyKeys.unshift(this.keyword);
     this.historyKeys = historyKeys;
     Preferences.get(getContext()).putSearchHistory(historyKeys);
-    navRouter.open()
-      .targetUrl(Routes.SearchResult)
+    HRouter.with()
+      .url(Routes.SearchResult)
       .params('keyword', this.keyword)
       .start()
   }
