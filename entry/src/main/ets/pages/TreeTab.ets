@@ -34,59 +34,6 @@ export struct TreeTab {
     this.loadTreeData();
   }
 
-  private async loadTreeData() {
-    this.loadStateTree = LoadState.LOADING
-    const res = await Api.get().getTree();
-    if (res.isSuccessWithData()) {
-      if (res.getDataOrThrow().length > 0) {
-        this.treeList = res.getDataOrThrow();
-        const selectedIds = Preferences.get(getContext()).getSelectedTreeId();
-        const selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
-        const selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
-        if (selectedTree1 !== undefined && selectedTree2 !== undefined) {
-          this.selectTreeTemp = selectedTree1;
-          this.selectTrees = { first: selectedTree1, second: selectedTree2 };
-        } else {
-          this.selectTreeTemp = this.treeList[0];
-          this.selectTrees = { first: this.treeList[0], second: this.treeList[0].children[0] };
-        }
-        this.loadStateTree = LoadState.SUCCESS;
-        this.loadArticleData();
-      } else {
-        this.loadStateTree = LoadState.EMPTY;
-      }
-    } else {
-      this.loadStateTree = LoadState.FAIL;
-    }
-  }
-
-  private loadArticleData() {
-    this.loadStateArticle = LoadState.LOADING;
-    this.nextPage = 1;
-    this.loadArticleDataByPage(0).then(
-      (data) => {
-        this.data = data;
-        if (this.data.length === 0) {
-          this.loadStateArticle = LoadState.EMPTY;
-        } else {
-          this.loadStateArticle = LoadState.SUCCESS;
-        }
-      },
-      () => {
-        this.loadStateArticle = LoadState.FAIL;
-      })
-  }
-
-  private async loadArticleDataByPage(page: number): Promise<Article[]> {
-    const res = await Api.get().getTreeArticleList(this.selectTrees.second!.id, page);
-    if (res.isSuccessWithData()) {
-      const list = res.getDataOrThrow().datas;
-      return Promise.resolve(list);
-    } else {
-      return Promise.reject();
-    }
-  }
-
   build() {
     Column() {
       TitleLayout({
@@ -306,5 +253,58 @@ export struct TreeTab {
       endMargin: 16
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+
+  private async loadTreeData() {
+    this.loadStateTree = LoadState.LOADING
+    const res = await Api.get().getTree();
+    if (res.isSuccessWithData()) {
+      if (res.getDataOrThrow().length > 0) {
+        this.treeList = res.getDataOrThrow();
+        const selectedIds = Preferences.get(getContext()).getSelectedTreeId();
+        const selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
+        const selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
+        if (selectedTree1 !== undefined && selectedTree2 !== undefined) {
+          this.selectTreeTemp = selectedTree1;
+          this.selectTrees = { first: selectedTree1, second: selectedTree2 };
+        } else {
+          this.selectTreeTemp = this.treeList[0];
+          this.selectTrees = { first: this.treeList[0], second: this.treeList[0].children[0] };
+        }
+        this.loadStateTree = LoadState.SUCCESS;
+        this.loadArticleData();
+      } else {
+        this.loadStateTree = LoadState.EMPTY;
+      }
+    } else {
+      this.loadStateTree = LoadState.FAIL;
+    }
+  }
+
+  private loadArticleData() {
+    this.loadStateArticle = LoadState.LOADING;
+    this.nextPage = 1;
+    this.loadArticleDataByPage(0).then(
+      (data) => {
+        this.data = data;
+        if (this.data.length === 0) {
+          this.loadStateArticle = LoadState.EMPTY;
+        } else {
+          this.loadStateArticle = LoadState.SUCCESS;
+        }
+      },
+      () => {
+        this.loadStateArticle = LoadState.FAIL;
+      })
+  }
+
+  private async loadArticleDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getTreeArticleList(this.selectTrees.second!.id, page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 }

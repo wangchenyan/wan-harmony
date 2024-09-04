@@ -32,42 +32,6 @@ struct SearchResult {
     this.loadData();
   }
 
-  private loadData() {
-    this.loadState = LoadState.LOADING
-    this.loadDataByPage(0).then(
-      (data) => {
-        this.data = data;
-        if (this.data.length === 0) {
-          this.loadState = LoadState.EMPTY;
-        } else {
-          this.loadState = LoadState.SUCCESS;
-        }
-      },
-      () => {
-        this.loadState = LoadState.FAIL;
-      })
-  }
-
-  private async loadDataByPage(page: number): Promise<Article[]> {
-    const res = await Api.get().search(this.keyword, page);
-    if (res.isSuccessWithData()) {
-      const list = res.getDataOrThrow().datas;
-      list.forEach((item) => {
-        item.title = this.removeHtmlTags(item.title);
-      })
-      return Promise.resolve(list);
-    } else {
-      return Promise.reject();
-    }
-  }
-
-  private removeHtmlTags(text: string): string {
-    // 使用正则表达式将 < 开头到 > 结尾之间的部分全部替换成空字符串
-    return text.replace(/<[^>]+>/g, '')
-      .replace('&gt;', '>')
-      .replace('&lt;', '<');
-  }
-
   build() {
     Column() {
       TitleLayout({
@@ -153,6 +117,42 @@ struct SearchResult {
       endMargin: 16
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+
+  private loadData() {
+    this.loadState = LoadState.LOADING
+    this.loadDataByPage(0).then(
+      (data) => {
+        this.data = data;
+        if (this.data.length === 0) {
+          this.loadState = LoadState.EMPTY;
+        } else {
+          this.loadState = LoadState.SUCCESS;
+        }
+      },
+      () => {
+        this.loadState = LoadState.FAIL;
+      })
+  }
+
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().search(this.keyword, page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      list.forEach((item) => {
+        item.title = this.removeHtmlTags(item.title);
+      })
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
+  }
+
+  private removeHtmlTags(text: string): string {
+    // 使用正则表达式将 < 开头到 > 结尾之间的部分全部替换成空字符串
+    return text.replace(/<[^>]+>/g, '')
+      .replace('&gt;', '>')
+      .replace('&lt;', '<');
   }
 }
 

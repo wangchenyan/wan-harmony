@@ -28,55 +28,6 @@ export struct Home {
     this.loadData();
   }
 
-  async loadData() {
-    this.loadState = LoadState.LOADING
-    this.loadDataByPage(0).then(
-      (data) => {
-        this.data = data;
-        if (this.data.length === 0) {
-          this.loadState = LoadState.EMPTY;
-        } else {
-          this.loadState = LoadState.SUCCESS;
-        }
-      },
-      () => {
-        this.loadState = LoadState.FAIL;
-      })
-  }
-
-  async loadDataByPage(page: number): Promise<HomeItemData[]> {
-    if (page === 0) {
-      const bannerRes = await Api.get().getHomeBanner();
-      const topRes = await Api.get().getTopArticle();
-      const articleRes = await Api.get().getHomeArticleList(page);
-
-      if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
-        const bannerList = bannerRes.getDataOrThrow();
-        let articleList: Article[] = [];
-        topRes.getDataOrThrow().forEach((item) => {
-          const tag = new ArticleTag();
-          tag.name = "置顶";
-          item.tags = [tag].concat(item.tags);
-          articleList.push(item);
-        })
-        articleList = articleList.concat(articleRes.getDataOrThrow().datas);
-        let dataList: HomeItemData[] = [];
-        dataList.push(bannerList);
-        dataList = dataList.concat(articleList);
-        return Promise.resolve(dataList);
-      } else {
-        return Promise.reject();
-      }
-    } else {
-      const articleRes = await Api.get().getHomeArticleList(page);
-      if (articleRes.isSuccessWithData()) {
-        return Promise.resolve(articleRes.getDataOrThrow().datas);
-      } else {
-        return Promise.reject();
-      }
-    }
-  }
-
   build() {
     PageLoading({
       loadState: this.loadState,
@@ -182,6 +133,55 @@ export struct Home {
       endMargin: 16
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+
+  async loadData() {
+    this.loadState = LoadState.LOADING
+    this.loadDataByPage(0).then(
+      (data) => {
+        this.data = data;
+        if (this.data.length === 0) {
+          this.loadState = LoadState.EMPTY;
+        } else {
+          this.loadState = LoadState.SUCCESS;
+        }
+      },
+      () => {
+        this.loadState = LoadState.FAIL;
+      })
+  }
+
+  async loadDataByPage(page: number): Promise<HomeItemData[]> {
+    if (page === 0) {
+      const bannerRes = await Api.get().getHomeBanner();
+      const topRes = await Api.get().getTopArticle();
+      const articleRes = await Api.get().getHomeArticleList(page);
+
+      if (bannerRes.isSuccessWithData() && topRes.isSuccessWithData() && articleRes.isSuccessWithData()) {
+        const bannerList = bannerRes.getDataOrThrow();
+        let articleList: Article[] = [];
+        topRes.getDataOrThrow().forEach((item) => {
+          const tag = new ArticleTag();
+          tag.name = "置顶";
+          item.tags = [tag].concat(item.tags);
+          articleList.push(item);
+        })
+        articleList = articleList.concat(articleRes.getDataOrThrow().datas);
+        let dataList: HomeItemData[] = [];
+        dataList.push(bannerList);
+        dataList = dataList.concat(articleList);
+        return Promise.resolve(dataList);
+      } else {
+        return Promise.reject();
+      }
+    } else {
+      const articleRes = await Api.get().getHomeArticleList(page);
+      if (articleRes.isSuccessWithData()) {
+        return Promise.resolve(articleRes.getDataOrThrow().datas);
+      } else {
+        return Promise.reject();
+      }
+    }
   }
 }
 

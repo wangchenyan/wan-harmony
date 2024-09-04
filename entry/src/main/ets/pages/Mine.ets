@@ -51,27 +51,6 @@ export struct Mine {
     UserService.get().removeUserObserver(this.userObserver);
   }
 
-  async logout() {
-    const res = await promptAction.showDialog({
-      title: "提示",
-      message: "确认退出登录？",
-      buttons: [
-        {
-          text: "确认",
-          color: $r("app.color.main")
-        },
-        {
-          text: "取消",
-          color: $r("app.color.text_h2")
-        }
-      ]
-    })
-    if (res.index === 0) {
-      await Api.get().logout();
-      UserService.get().clearUser();
-    }
-  }
-
   build() {
     PageLoading({
       loadState: this.loadState,
@@ -186,6 +165,27 @@ export struct Mine {
       }
       .width('100%')
       .height('100%')
+    }
+  }
+
+  async logout() {
+    const res = await promptAction.showDialog({
+      title: "提示",
+      message: "确认退出登录？",
+      buttons: [
+        {
+          text: "确认",
+          color: $r("app.color.main")
+        },
+        {
+          text: "取消",
+          color: $r("app.color.text_h2")
+        }
+      ]
+    })
+    if (res.index === 0) {
+      await Api.get().logout();
+      UserService.get().clearUser();
     }
   }
 }

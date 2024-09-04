@@ -22,36 +22,6 @@ struct SearchEntry {
     }
   }
 
-  search() {
-    if (!this.keyword) {
-      toast("请输入关键词");
-      return;
-    }
-    let historyKeys: string[] = [];
-    historyKeys = historyKeys.concat(this.historyKeys)
-    const existIndex = historyKeys.findIndex((value) => {
-      return this.keyword === value;
-    })
-    if (existIndex >= 0) {
-      historyKeys.splice(existIndex, 1);
-    }
-    historyKeys.unshift(this.keyword);
-    this.historyKeys = historyKeys;
-    Preferences.get(getContext()).putSearchHistory(historyKeys);
-    navRouter.open()
-      .targetUrl(Routes.SearchResult)
-      .params('keyword', this.keyword)
-      .start()
-  }
-
-  deleteHistory(index: number) {
-    let historyKeys: string[] = [];
-    historyKeys = historyKeys.concat(this.historyKeys)
-    historyKeys.splice(index, 1);
-    this.historyKeys = historyKeys;
-    Preferences.get(getContext()).putSearchHistory(historyKeys);
-  }
-
   build() {
     Column() {
       Row()
@@ -178,6 +148,36 @@ struct SearchEntry {
     }
     .width('100%')
     .height('100%')
+  }
+
+  search() {
+    if (!this.keyword) {
+      toast("请输入关键词");
+      return;
+    }
+    let historyKeys: string[] = [];
+    historyKeys = historyKeys.concat(this.historyKeys)
+    const existIndex = historyKeys.findIndex((value) => {
+      return this.keyword === value;
+    })
+    if (existIndex >= 0) {
+      historyKeys.splice(existIndex, 1);
+    }
+    historyKeys.unshift(this.keyword);
+    this.historyKeys = historyKeys;
+    Preferences.get(getContext()).putSearchHistory(historyKeys);
+    navRouter.open()
+      .targetUrl(Routes.SearchResult)
+      .params('keyword', this.keyword)
+      .start()
+  }
+
+  deleteHistory(index: number) {
+    let historyKeys: string[] = [];
+    historyKeys = historyKeys.concat(this.historyKeys)
+    historyKeys.splice(index, 1);
+    this.historyKeys = historyKeys;
+    Preferences.get(getContext()).putSearchHistory(historyKeys);
   }
 }
 

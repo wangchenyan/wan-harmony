@@ -17,23 +17,6 @@ export struct Wechat {
     this.loadData();
   }
 
-  private loadData() {
-    this.loadState = LoadState.LOADING
-    Api.get().getWeChatAuthorList()
-      .then((res) => {
-        if (res.isSuccessWithData()) {
-          this.authors = res.getDataOrThrow();
-          if (this.authors.length === 0) {
-            this.loadState = LoadState.EMPTY;
-          } else {
-            this.loadState = LoadState.SUCCESS;
-          }
-        } else {
-          this.loadState = LoadState.FAIL;
-        }
-      })
-  }
-
   build() {
     Column() {
       TitleLayout({
@@ -71,5 +54,22 @@ export struct Wechat {
     }
     .width('100%')
     .height('100%')
+  }
+
+  private loadData() {
+    this.loadState = LoadState.LOADING
+    Api.get().getWeChatAuthorList()
+      .then((res) => {
+        if (res.isSuccessWithData()) {
+          this.authors = res.getDataOrThrow();
+          if (this.authors.length === 0) {
+            this.loadState = LoadState.EMPTY;
+          } else {
+            this.loadState = LoadState.SUCCESS;
+          }
+        } else {
+          this.loadState = LoadState.FAIL;
+        }
+      })
   }
 }

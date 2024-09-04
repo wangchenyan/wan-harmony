@@ -24,35 +24,6 @@ struct CollectList {
     this.loadData();
   }
 
-  private loadData() {
-    this.loadState = LoadState.LOADING
-    this.loadDataByPage(0).then(
-      (data) => {
-        this.data = data;
-        if (this.data.length === 0) {
-          this.loadState = LoadState.EMPTY;
-        } else {
-          this.loadState = LoadState.SUCCESS;
-        }
-      },
-      () => {
-        this.loadState = LoadState.FAIL;
-      })
-  }
-
-  private async loadDataByPage(page: number): Promise<Article[]> {
-    const res = await Api.get().getCollectList(page);
-    if (res.isSuccessWithData()) {
-      const list = res.getDataOrThrow().datas;
-      list.forEach((item) => {
-        item.collect = true;
-      })
-      return Promise.resolve(list);
-    } else {
-      return Promise.reject();
-    }
-  }
-
   build() {
     Column() {
       TitleLayout({
@@ -152,6 +123,35 @@ struct CollectList {
       endMargin: 16
     })
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
+  }
+
+  private loadData() {
+    this.loadState = LoadState.LOADING
+    this.loadDataByPage(0).then(
+      (data) => {
+        this.data = data;
+        if (this.data.length === 0) {
+          this.loadState = LoadState.EMPTY;
+        } else {
+          this.loadState = LoadState.SUCCESS;
+        }
+      },
+      () => {
+        this.loadState = LoadState.FAIL;
+      })
+  }
+
+  private async loadDataByPage(page: number): Promise<Article[]> {
+    const res = await Api.get().getCollectList(page);
+    if (res.isSuccessWithData()) {
+      const list = res.getDataOrThrow().datas;
+      list.forEach((item) => {
+        item.collect = true;
+      })
+      return Promise.resolve(list);
+    } else {
+      return Promise.reject();
+    }
   }
 }
 

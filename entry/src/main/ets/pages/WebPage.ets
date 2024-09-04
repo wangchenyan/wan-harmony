@@ -41,7 +41,7 @@ export struct WebPage {
             .onProgressChange((event) => {
               this.progress = event?.newProgress ?? 0
             })
-          if (this.progress != 100) {
+          if (this.progress !== 100) {
             Progress({ value: this.progress, total: 100, type: ProgressType.Linear })
               .width('100%')
           }

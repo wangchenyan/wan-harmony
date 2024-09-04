@@ -14,32 +14,6 @@ struct Login {
   private account: string = "";
   private password: string = "";
 
-  async login() {
-    if (!this.account) {
-      toast("请输入用户名");
-      return;
-    }
-    if (!this.password) {
-      toast("请输入密码");
-      return;
-    }
-    this.showLoading = true;
-    const res = await Api.get().login(this.account, this.password);
-    this.showLoading = false;
-    if (res.isSuccessWithData()) {
-      toast("登录成功");
-      UserService.get().setUser(res.data);
-      const user = await UserService.get().updateUser();
-      if (user) {
-        navRouter.open()
-          .params('success', true)
-          .back();
-      }
-    } else {
-      toast(res.errorMsg);
-    }
-  }
-
   build() {
     Stack() {
       PageLoading({
@@ -92,6 +66,32 @@ struct Login {
     }
     .width('100%')
     .height('100%')
+  }
+
+  async login() {
+    if (!this.account) {
+      toast("请输入用户名");
+      return;
+    }
+    if (!this.password) {
+      toast("请输入密码");
+      return;
+    }
+    this.showLoading = true;
+    const res = await Api.get().login(this.account, this.password);
+    this.showLoading = false;
+    if (res.isSuccessWithData()) {
+      toast("登录成功");
+      UserService.get().setUser(res.data);
+      const user = await UserService.get().updateUser();
+      if (user) {
+        navRouter.open()
+          .params('success', true)
+          .back();
+      }
+    } else {
+      toast(res.errorMsg);
+    }
   }
 }
 
