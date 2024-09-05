@@ -1,5 +1,5 @@
 import { RouteExecutor } from './RouteExecutor'
-import { RouteInfo, RouteParams } from './RouteInfo'
+import { RouteInfo, RouteMode, RouteParams } from './RouteInfo'
 
 export class RouteRequest {
   private readonly routeInfo: RouteInfo = new RouteInfo()
@@ -28,13 +28,13 @@ export class RouteRequest {
     return this
   }
 
-  animated(value: boolean): RouteRequest {
-    this.routeInfo.animated = value
+  mode(value: RouteMode): RouteRequest {
+    this.routeInfo.mode = value
     return this
   }
 
-  moveToTop(value: boolean): RouteRequest {
-    this.routeInfo.moveToTop = value
+  animated(value: boolean): RouteRequest {
+    this.routeInfo.animated = value
     return this
   }
 

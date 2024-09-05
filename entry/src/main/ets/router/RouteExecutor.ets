@@ -1,5 +1,5 @@
 import { HRouter } from './HRouter'
-import { RouteInfo, RouteParams } from './RouteInfo'
+import { RouteInfo, RouteMode, RouteParams } from './RouteInfo'
 
 class _RouteExecutor {
   start(info: RouteInfo) {
@@ -7,15 +7,17 @@ class _RouteExecutor {
     if (!builder) {
       return
     }
-    if (info.moveToTop) {
-      let indices = HRouter.pathStack.getIndexByName(info.targetUrl)
-      if (indices.length) {
-        HRouter.pathStack.moveIndexToTop(indices[indices.length - 1], info.animated)
-      } else {
+    switch (info.mode) {
+      case RouteMode.ClearTop:
+        this.startWithClearTop(info)
+        break;
+      case RouteMode.MoveToTop:
+        this.startWithMoveToTop(info)
+        break;
+      case RouteMode.Standard:
+      default:
         this.startWithStandardMode(info)
-      }
-    } else {
-      this.startWithStandardMode(info)
+        break;
     }
   }
 
@@ -31,6 +33,30 @@ class _RouteExecutor {
       }, info.animated)
     } else {
       HRouter.pathStack.pushPathByName(info.targetUrl, info.targetParams, info.animated)
+    }
+  }
+
+  private startWithClearTop(info: RouteInfo) {
+    let indices = HRouter.pathStack.getIndexByName(info.targetUrl)
+    if (indices.length) {
+      let lastIndex = indices[indices.length - 1]
+      while (lastIndex <= HRouter.pathStack.size() - 1) {
+        HRouter.pathStack.pop(false)
+      }
+      setTimeout(() => {
+        this.startWithStandardMode(info)
+      }, 16)
+    } else {
+      this.startWithStandardMode(info)
+    }
+  }
+
+  private startWithMoveToTop(info: RouteInfo) {
+    let indices = HRouter.pathStack.getIndexByName(info.targetUrl)
+    if (indices.length) {
+      HRouter.pathStack.moveIndexToTop(indices[indices.length - 1], info.animated)
+    } else {
+      this.startWithStandardMode(info)
     }
   }
 }

@@ -231,6 +231,7 @@ export struct TreeTab {
         ListItem() {
           ArticleItemComponent({
             article: item,
+            clearTop: true,
             onCollectClick: (article: Article) => {
               CollectUtils.collect(article)
                 .then((success) => {

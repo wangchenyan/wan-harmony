@@ -1,10 +1,12 @@
 import { Article, ArticleTag, getArticleAuthor, getArticleChapter, getTagColor } from '../net/model/Article';
 import { HRouter } from '../router/HRouter';
+import { RouteMode } from '../router/RouteInfo';
 import { Routes } from '../Routes';
 
 @Component
 export struct ArticleItemComponent {
   article: Article = new Article();
+  clearTop: boolean = false
   onCollectClick?: (article: Article) => void;
 
   build() {
@@ -88,6 +90,7 @@ export struct ArticleItemComponent {
       HRouter.with()
         .url(Routes.Web)
         .params('url', this.article.link)
+        .mode(this.clearTop ? RouteMode.ClearTop : RouteMode.Standard)
         .start()
     })
   }

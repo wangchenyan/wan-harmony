@@ -8,6 +8,7 @@ import { ArticleItemComponent } from '../widgets/ArticleItemComponent'
 import CollectUtils from '../common/CollectUtils'
 import { HRouter } from '../router/HRouter'
 import { Routes } from '../Routes'
+import { RouteMode } from '../router/RouteInfo'
 
 declare type HomeItemData = Article | HomeBannerData[];
 
@@ -112,6 +113,7 @@ export struct Home {
           } else {
             ArticleItemComponent({
               article: item as Article,
+              clearTop: true,
               onCollectClick: async (article: Article) => {
                 const success = await CollectUtils.collect(article)
                 if (success) {
@@ -239,6 +241,7 @@ struct BannerComponent {
       HRouter.with()
         .url(Routes.Web)
         .params('url', data.url)
+        .mode(RouteMode.ClearTop)
         .start()
     })
   }
