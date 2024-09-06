@@ -33,6 +33,9 @@ struct Index {
       this.tabContainerBuilder()
     }
     .mode(NavigationMode.Auto)
+    .navBarWidth(360)
+    .navBarWidthRange([360, 640])
+    .minContentWidth(640)
     .navDestination(this.navDestination)
     .hideTitleBar(true)
   }
