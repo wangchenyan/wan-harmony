@@ -1,11 +1,11 @@
 export default class EntryContext {
-  private static context: object
+  private static context: Context
 
-  static setContext(context: object) {
-    this.context = context
+  static setContext(context: Context) {
+    EntryContext.context = context
   }
 
-  static getContext(): object {
+  static getContext(): Context {
     if (!EntryContext.context) {
       throw Error("context is not init")
     }

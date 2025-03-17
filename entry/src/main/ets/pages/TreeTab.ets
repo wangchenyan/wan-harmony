@@ -1,6 +1,6 @@
 import { PullToRefresh, PullToRefreshConfigurator } from '@ohos/pulltorefresh';
 import hilog from '@ohos.hilog';
-import { Pair } from '../common/Structs';
+import { Pair } from '../common/Pair';
 import Api from '../net/Api';
 import { Article } from '../net/model/Article';
 import { Tree } from '../net/model/Tree';
@@ -18,7 +18,7 @@ export struct TreeTab {
   @State title: string = "体系";
   @State treeList: Tree[] = [];
   @State data: Article[] = [];
-  @State selectTrees: Pair<Tree | undefined, Tree | undefined> = { first: undefined, second: undefined };
+  @State selectTrees: Pair<Tree | undefined, Tree | undefined> = new Pair(undefined, undefined);
   @State selectTreeTemp?: Tree = undefined;
   @State showSelectLayer: boolean = false;
   private static TAG = "Tree"
@@ -185,7 +185,7 @@ export struct TreeTab {
                           .textAlign(TextAlign.Center)
                           .backgroundColor((index % 2 === 1) ? Color.Transparent : $r("app.color.hot_key_bg"))
                           .onClick((event) => {
-                            this.selectTrees = { first: this.selectTreeTemp, second: tree };
+                            this.selectTrees = new Pair(this.selectTreeTemp, tree);
                             Preferences.get(getContext())
                               .putSelectedTreeId(this.selectTrees.first!.id, this.selectTrees.second!.id)
                             this.showSelectLayer = false;
@@ -267,10 +267,10 @@ export struct TreeTab {
         const selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
         if (selectedTree1 !== undefined && selectedTree2 !== undefined) {
           this.selectTreeTemp = selectedTree1;
-          this.selectTrees = { first: selectedTree1, second: selectedTree2 };
+          this.selectTrees = new Pair(selectedTree1, selectedTree2);
         } else {
           this.selectTreeTemp = this.treeList[0];
-          this.selectTrees = { first: this.treeList[0], second: this.treeList[0].children[0] };
+          this.selectTrees = new Pair(this.treeList[0], this.treeList[0].children[0]);
         }
         this.loadStateTree = LoadState.SUCCESS;
         this.loadArticleData();

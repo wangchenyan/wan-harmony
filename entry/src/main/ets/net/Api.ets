@@ -16,7 +16,7 @@ import JSON from '@ohmos/json-bigint';
 const TAG = "Api";
 const BASE_URL: string = "https://www.wanandroid.com";
 
-const cookieJar: CookieJar = new PersistentCookieJar(EntryContext.getContext() as Context);
+const cookieJar: CookieJar = new PersistentCookieJar(EntryContext.getContext());
 
 function parseUri(url: string): uri.URI {
   return new uri.URI(url);

@@ -19,7 +19,7 @@ export default class UserService {
   }
 
   private constructor() {
-    const context = EntryContext.getContext() as Context;
+    const context = EntryContext.getContext();
     const user = Preferences.get(context).getUser()
     if (user) {
       this.user = user;
@@ -75,7 +75,7 @@ export default class UserService {
   setUser(user?: User) {
     this.user = user;
     this.notifyObserver();
-    const context = EntryContext.getContext() as Context;
+    const context = EntryContext.getContext();
     Preferences.get(context).putUser(user);
   }
 

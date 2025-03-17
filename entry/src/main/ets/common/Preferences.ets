@@ -1,7 +1,7 @@
 import dataPreferences from '@ohos.data.preferences';
 import JSON from '@ohmos/json-bigint';
 import { User } from '../service/UserService';
-import { Pair } from './Structs';
+import { Pair } from './Pair';
 
 const PREFERENCES_NAME = "top.wangchenyan.wanharmony"
 const KEY_USER_INFO = "user_info";
@@ -51,13 +51,9 @@ export default class Preferences {
     const id1 = this.preferences.getSync(KEY_SELECTED_TREE_ID_1, 0) as number;
     const id2 = this.preferences.getSync(KEY_SELECTED_TREE_ID_2, 0) as number;
     if (id1 > 0 && id2 > 0) {
-      return {
-        first: id1, second: id2
-      };
+      return new Pair(id1, id2);
     } else {
-      return {
-        first: 0, second: 0
-      };
+      return new Pair(0, 0);
     }
   }
 
