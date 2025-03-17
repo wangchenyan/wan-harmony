@@ -1,10 +1,9 @@
 {
-  "license": "",
-  "devDependencies": {},
-  "author": "",
   "name": "entry",
+  "version": "1.0.0",
   "description": "Please describe the basic information.",
   "main": "",
-  "version": "1.0.0",
+  "author": "",
+  "license": "",
   "dependencies": {}
 }
