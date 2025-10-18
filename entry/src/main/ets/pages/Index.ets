@@ -8,6 +8,7 @@ import WindowUtils from '../common/WindowUtils'
 import { HRouter } from '../router/HRouter'
 import { registerRoutes } from '../Routes'
 import { RouteParams } from '../router/RouteInfo'
+import { HarmonyPage } from './Harmony'
 
 @Entry
 @Component
@@ -50,20 +51,24 @@ struct Index {
           }.tabBar(this.tabBuilder("首页", 0, $r("app.media.ic_tab_home_fill"), $r("app.media.ic_tab_home")))
 
           TabContent() {
+            HarmonyPage()
+          }.tabBar(this.tabBuilder("鸿蒙", 1, $r("app.media.harmony_tab_fill"), $r("app.media.harmony_tab")))
+
+          TabContent() {
             Square()
-          }.tabBar(this.tabBuilder("广场", 1, $r("app.media.ic_tab_discover_fill"), $r("app.media.ic_tab_discover")))
+          }.tabBar(this.tabBuilder("广场", 2, $r("app.media.ic_tab_discover_fill"), $r("app.media.ic_tab_discover")))
 
           TabContent() {
             TreeTab()
-          }.tabBar(this.tabBuilder("体系", 2, $r("app.media.ic_tab_tree_fill"), $r("app.media.ic_tab_tree")))
+          }.tabBar(this.tabBuilder("体系", 3, $r("app.media.ic_tab_tree_fill"), $r("app.media.ic_tab_tree")))
 
           TabContent() {
             Wechat()
-          }.tabBar(this.tabBuilder("公众号", 3, $r("app.media.ic_tab_wechat_fill"), $r("app.media.ic_tab_wechat")))
+          }.tabBar(this.tabBuilder("公众号", 4, $r("app.media.ic_tab_wechat_fill"), $r("app.media.ic_tab_wechat")))
 
           TabContent() {
             Mine()
-          }.tabBar(this.tabBuilder("我的", 4, $r("app.media.ic_tab_my_fill"), $r("app.media.ic_tab_my")))
+          }.tabBar(this.tabBuilder("我的", 5, $r("app.media.ic_tab_my_fill"), $r("app.media.ic_tab_my")))
         }
         .layoutWeight(1)
         .scrollable(false)

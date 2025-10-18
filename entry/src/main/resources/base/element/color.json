@@ -67,6 +67,22 @@
     {
       "name": "hot_key_bg",
       "value": "#DDDDDD"
+    },
+    {
+      "name": "rank_gold",
+      "value": "#FFD700"
+    },
+    {
+      "name": "rank_silver",
+      "value": "#C0C0C0"
+    },
+    {
+      "name": "rank_bronze",
+      "value": "#CD7F32"
+    },
+    {
+      "name": "gray600",
+      "value": "#999999"
     }
   ]
 }

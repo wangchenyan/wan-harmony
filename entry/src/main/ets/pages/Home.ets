@@ -42,13 +42,14 @@ export struct Home {
         TitleLayout({
           title: this.title,
           showBack: false,
+
           menuIcon: $r("app.media.ic_search"),
           onMenuClick: () => {
             HRouter.with()
               .url(Routes.SearchEntry)
-              .start()
+              .start();
           }
-        })
+        });
         PullToRefresh({
           data: $data,
           scroller: this.scroller,
