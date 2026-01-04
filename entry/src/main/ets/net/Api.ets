@@ -12,6 +12,8 @@ import { HotKey } from './model/Search';
 import { WeChatAuthor } from './model/WeChat';
 import { Tree } from './model/Tree';
 import JSON from '@ohmos/json-bigint';
+import { Rank } from './model/RankingList';
+import { Harmony } from './model/Harmony';
 
 const TAG = "Api";
 const BASE_URL: string = "https://www.wanandroid.com";
@@ -163,5 +165,14 @@ export default class Api {
 
   async getTreeArticleList(cid: number, page: number): Promise<Response<ArticleList>> {
     return requestSync(`/article/list/${page}/json?cid=${cid}`, http.RequestMethod.GET)
+  }
+
+  async getHarmony() : Promise<Response<Harmony>> {
+    return requestSync(`/harmony/index/json`, http.RequestMethod.GET)
+  }
+
+  async getRankingList(page: number): Promise<Response<Rank>> {
+    const url = `/coin/rank/${page}/json`;
+    return requestSync(url, http.RequestMethod.GET);
   }
 }

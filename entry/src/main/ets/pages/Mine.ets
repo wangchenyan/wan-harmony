@@ -144,6 +144,32 @@ export struct Mine {
               .start()
           })
         })
+        Row()
+          .width('100%')
+          .height(0.5)
+          .backgroundColor($r("app.color.divider"))
+        Row() {
+          Text("积分排行榜")
+            .layoutWeight(1)
+            .fontSize(15)
+            .fontColor($r("app.color.text_h1"))
+          Image($r("app.media.ic_arrow_right"))
+            .fillColor($r("app.color.text_h1"))
+            .width(20)
+            .height(20)
+        }
+        .width('100%')
+        .height(50)
+        .alignItems(VerticalAlign.Center)
+        .padding({ left: 16, right: 16 })
+        .backgroundColor($r("app.color.white"))
+        .onClick((event) => {
+          UserService.get().checkLogin(() => {
+            HRouter.with()
+              .url(Routes.RankingList)
+              .start()
+          })
+        })
 
         if (this.isLogin) {
           Column() {

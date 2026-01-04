@@ -36,13 +36,15 @@ export class Article {
   shareUser: string = ""
   superChapterId: number = 0
   superChapterName: string = ""
-  tags: ArticleTag[] = []
   title: string = ""
   type: number = 0
   userId: number = 0
   visible: number = 0
   zan: number = 0
-  originId: number = 0
+  adminAdd: boolean = false;
+  isAdminAdd: boolean = false;
+  originId: number = 0;
+  tags: ArticleTag[] = [];
 }
 
 export function getArticleAuthor(article: Article): string {
