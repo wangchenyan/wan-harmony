@@ -6,7 +6,7 @@ import { TitleLayout } from '../widgets/TitleLayout';
 import { HRouter } from '../router/HRouter';
 import { RouteParams } from '../router/RouteInfo';
 import { RankingList, Rank } from '../net/model/RankingList';
-import { Response } from '../net/model/Response';
+import { Response } from '../net/Response';
 
 @Component
 export struct RankingListPage {

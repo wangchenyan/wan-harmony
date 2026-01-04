@@ -8,7 +8,7 @@ import { HRouter } from '../router/HRouter';
 import { RouteMode, RouteParams } from '../router/RouteInfo';
 import { Article } from '../net/model/Article';
 import { Harmony, Links, Open_sources, Tools } from '../net/model/Harmony';
-import { Response } from '../net/model/Response';
+import { Response } from '../net/Response';
 import { Routes } from '../Routes';
 
 interface HarmonyCategory {
