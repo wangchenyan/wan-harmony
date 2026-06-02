@@ -101,4 +101,5 @@ export function loginNavDesBuilder(params: RouteParams) {
     Login()
   }
   .hideTitleBar(true)
+  .backgroundColor($r('app.color.bg'))
 }

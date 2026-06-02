@@ -68,4 +68,5 @@ export function webPageNavDesBuilder(params: RouteParams) {
   WebPage({
     url: params.get('url') as string
   })
+    .backgroundColor($r('app.color.bg'))
 }

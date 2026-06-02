@@ -1,48 +1,12 @@
 {
   "color": [
     {
-      "name": "start_window_background",
-      "value": "#FAFAFA"
-    },
-    {
       "name": "white",
       "value": "#FFFFFF"
     },
     {
-      "name": "translucent_black_40",
-      "value": "#66000000"
-    },
-    {
-      "name": "translucent_black_50",
-      "value": "#80000000"
-    },
-    {
-      "name": "main",
-      "value": "#4CAF50"
-    },
-    {
-      "name": "text_h1",
-      "value": "#212121"
-    },
-    {
-      "name": "text_h2",
-      "value": "#757575"
-    },
-    {
-      "name": "divider",
-      "value": "#EEEEEE"
-    },
-    {
-      "name": "navi_tab_unselect",
-      "value": "#424242"
-    },
-    {
-      "name": "navi_bar_bg",
-      "value": "#FFFFFF"
-    },
-    {
-      "name": "title_bar_bg",
-      "value": "#FAFAFA"
+      "name": "black",
+      "value": "#000000"
     },
     {
       "name": "red",
@@ -65,24 +29,72 @@
       "value": "#009688"
     },
     {
-      "name": "hot_key_bg",
-      "value": "#DDDDDD"
-    },
-    {
-      "name": "rank_gold",
+      "name": "gold",
       "value": "#FFD700"
     },
     {
-      "name": "rank_silver",
+      "name": "silver",
       "value": "#C0C0C0"
     },
     {
-      "name": "rank_bronze",
+      "name": "bronze",
       "value": "#CD7F32"
     },
     {
-      "name": "gray600",
+      "name": "gray",
       "value": "#999999"
+    },
+    {
+      "name": "translucent_black_40",
+      "value": "#66000000"
+    },
+    {
+      "name": "translucent_black_50",
+      "value": "#80000000"
+    },
+    {
+      "name": "main",
+      "value": "#4CAF50"
+    },
+    {
+      "name": "bg",
+      "value": "#F4F4F4"
+    },
+    {
+      "name": "bg_overlay",
+      "value": "$color:white"
+    },
+    {
+      "name": "start_window_background",
+      "value": "$color:bg"
+    },
+    {
+      "name": "text_h1",
+      "value": "#212121"
+    },
+    {
+      "name": "text_h2",
+      "value": "#757575"
+    },
+    {
+      "name": "divider",
+      "value": "#EEEEEE"
+    },
+    {
+      "name": "navi_tab_unselect",
+      "value": "#424242"
+    },
+    {
+      "name": "title_bar_bg",
+      "value": "#FAFAFA"
+    },
+    {
+      "name": "navi_bar_bg",
+      "value": "#FAFAFA"
+    },
+    {
+      "name": "hot_key_bg",
+      "value": "#DDDDDD"
     }
   ]
 }

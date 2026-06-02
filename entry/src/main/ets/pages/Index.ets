@@ -20,7 +20,7 @@ struct Index {
 
   aboutToAppear() {
     registerRoutes()
-    OHPermission.requestPermission(getContext(this), ['ohos.permission.INTERNET'])
+    OHPermission.requestPermission(this.getUIContext().getHostContext()!, ['ohos.permission.INTERNET'])
       .then((v) => {
         this.isPermissionGrant = true;
       })
@@ -39,6 +39,7 @@ struct Index {
     .minContentWidth(640)
     .navDestination(this.navDestination)
     .hideTitleBar(true)
+    .backgroundColor($r('app.color.bg'))
   }
 
   @Builder
@@ -76,7 +77,6 @@ struct Index {
         .onChange((index) => {
           this.currentIndex = index
         })
-        .backgroundColor($r("app.color.start_window_background"))
       } else {
         Text("No Permission")
           .width('100%')

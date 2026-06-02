@@ -5,7 +5,7 @@ import { PullToRefresh } from '@ohos/pulltorefresh';
 import { TitleLayout } from '../widgets/TitleLayout';
 import { HRouter } from '../router/HRouter';
 import { RouteParams } from '../router/RouteInfo';
-import { RankingList, Rank } from '../net/model/RankingList';
+import { Rank, RankingList } from '../net/model/RankingList';
 import { Response } from '../net/Response';
 
 @Component
@@ -113,7 +113,7 @@ export struct RankingListPage {
           Column({ space: 8 }) {
             Text('暂无排行榜数据')
               .fontSize(14)
-              .fontColor($r("app.color.gray600"))
+              .fontColor($r("app.color.gray"))
           }
           .width('100%')
           .height(100)
@@ -153,7 +153,7 @@ export struct RankingListPage {
 
         Text(`等级：${item.level}`)
           .fontSize(12)
-          .fontColor($r("app.color.gray600"));
+          .fontColor($r("app.color.gray"));
       }
       .flexGrow(1);
 
@@ -169,13 +169,13 @@ export struct RankingListPage {
   private getRankColor(rank: number): Resource {
     switch (rank) {
       case 1:
-        return $r("app.color.rank_gold");
+        return $r("app.color.gold");
       case 2:
-        return $r("app.color.rank_silver");
+        return $r("app.color.silver");
       case 3:
-        return $r("app.color.rank_bronze");
+        return $r("app.color.bronze");
       default:
-        return $r("app.color.gray600");
+        return $r("app.color.gray");
     }
   }
 
@@ -221,5 +221,6 @@ export function RankingListNavDesBuilder(params: RouteParams) {
   NavDestination() {
     RankingListPage()
   }
-  .hideTitleBar(true);
+  .hideTitleBar(true)
+  .backgroundColor($r('app.color.bg'))
 }

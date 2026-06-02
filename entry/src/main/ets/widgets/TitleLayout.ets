@@ -6,6 +6,7 @@ export struct TitleLayout {
   @Prop
   title: string;
   isJustShowStatusBar: boolean = false;
+  bgColor: ResourceColor = $r("app.color.title_bar_bg");
   showBack: boolean = true;
   onBack: () => void = () => {
     HRouter.with().back();
@@ -60,6 +61,6 @@ export struct TitleLayout {
       }
     }
     .width('100%')
-    .backgroundColor($r("app.color.title_bar_bg"))
+    .backgroundColor(this.bgColor)
   }
 }

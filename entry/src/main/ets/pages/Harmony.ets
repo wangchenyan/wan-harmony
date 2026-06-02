@@ -21,7 +21,7 @@ interface GeneratedTypeLiteralInterface_1 {
 }
 
 @Component
-struct HarmonyTab {
+export struct HarmonyTab {
   @Prop categoryData: Links | Open_sources | Tools | null;
   private static TAG = "HarmonyTab";
   private scroller: Scroller = new Scroller();
@@ -83,6 +83,7 @@ struct HarmonyTab {
       startMargin: 16,
       endMargin: 16
     })
+    .backgroundColor($r('app.color.bg_overlay'))
     .edgeEffect(EdgeEffect.None)
   }
 }
@@ -128,7 +129,9 @@ export struct HarmonyPage {
         showBack: false,
         menuIcon: $r("app.media.ic_search"),
         onMenuClick: () => {
-          HRouter.with().url(Routes.Web).params('url', "https://ohpm.openharmony.cn/#/cn/home")
+          HRouter.with()
+            .url(Routes.Web)
+            .params('url', "https://ohpm.openharmony.cn/#/cn/home")
             .mode(this.clearTop ? RouteMode.ClearTop : RouteMode.Standard)
             .start();
         }
@@ -159,6 +162,7 @@ export struct HarmonyPage {
           .scrollable(true)
           .barMode(BarMode.Scrollable)
           .barHeight(44)
+          .barBackgroundColor($r('app.color.title_bar_bg'))
         }
       }
     }
@@ -192,6 +196,5 @@ export function HarmonyNavDesBuilder(params: RouteParams) {
     HarmonyPage()
   }
   .hideTitleBar(true)
+  .backgroundColor($r('app.color.bg'))
 }
-
-export { Harmony };

@@ -49,6 +49,7 @@ export struct Wechat {
           .scrollable(true)
           .barMode(BarMode.Scrollable)
           .barHeight(44)
+          .barBackgroundColor($r('app.color.title_bar_bg'))
         }
       }
     }

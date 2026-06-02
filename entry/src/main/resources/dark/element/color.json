@@ -1,0 +1,40 @@
+{
+  "color": [
+    {
+      "name": "bg",
+      "value": "#121212"
+    },
+    {
+      "name": "bg_overlay",
+      "value": "$color:black"
+    },
+    {
+      "name": "text_h1",
+      "value": "#F5F5F5"
+    },
+    {
+      "name": "text_h2",
+      "value": "#B0B0B0"
+    },
+    {
+      "name": "divider",
+      "value": "#111111"
+    },
+    {
+      "name": "navi_tab_unselect",
+      "value": "#9E9E9E"
+    },
+    {
+      "name": "title_bar_bg",
+      "value": "#1C1C1E"
+    },
+    {
+      "name": "navi_bar_bg",
+      "value": "#1C1C1E"
+    },
+    {
+      "name": "hot_key_bg",
+      "value": "#222222"
+    }
+  ]
+}

@@ -64,6 +64,7 @@ export struct TreeTab {
             .height(48)
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
+            .backgroundColor($r('app.color.title_bar_bg'))
             .onClick((event) => {
               if (this.showSelectLayer) {
                 this.showSelectLayer = false;
@@ -148,7 +149,7 @@ export struct TreeTab {
                             bottom: 8
                           })
                           .fontColor((this.selectTreeTemp!.id === tree.id) ? $r("app.color.main") :
-                          $r("app.color.text_h1"))
+                            $r("app.color.text_h1"))
                           .fontSize(14)
                           .textAlign(TextAlign.Center)
                           .backgroundColor((index % 2 === 0) ? Color.Transparent : $r("app.color.hot_key_bg"))
@@ -180,13 +181,13 @@ export struct TreeTab {
                             bottom: 8
                           })
                           .fontColor((this.selectTrees.second!.id === tree.id) ? $r("app.color.main") :
-                          $r("app.color.text_h1"))
+                            $r("app.color.text_h1"))
                           .fontSize(14)
                           .textAlign(TextAlign.Center)
                           .backgroundColor((index % 2 === 1) ? Color.Transparent : $r("app.color.hot_key_bg"))
                           .onClick((event) => {
                             this.selectTrees = new Pair(this.selectTreeTemp, tree);
-                            Preferences.get(getContext())
+                            Preferences.get(this.getUIContext().getHostContext()!)
                               .putSelectedTreeId(this.selectTrees.first!.id, this.selectTrees.second!.id)
                             this.showSelectLayer = false;
                             this.hasMore = true;
@@ -202,7 +203,7 @@ export struct TreeTab {
                 }
                 .width('100%')
                 .height('70%')
-                .backgroundColor($r("app.color.start_window_background"))
+                .backgroundColor($r("app.color.bg"))
               }
               .width('100%')
               .height('100%')
@@ -253,6 +254,7 @@ export struct TreeTab {
       startMargin: 16,
       endMargin: 16
     })
+    .backgroundColor($r('app.color.bg_overlay'))
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
   }
 
@@ -262,7 +264,7 @@ export struct TreeTab {
     if (res.isSuccessWithData()) {
       if (res.getDataOrThrow().length > 0) {
         this.treeList = res.getDataOrThrow();
-        const selectedIds = Preferences.get(getContext()).getSelectedTreeId();
+        const selectedIds = Preferences.get(this.getUIContext().getHostContext()!).getSelectedTreeId();
         const selectedTree1 = this.treeList.find((item) => item.id === selectedIds.first);
         const selectedTree2 = selectedTree1?.children?.find((item) => item.id === selectedIds.second);
         if (selectedTree1 !== undefined && selectedTree2 !== undefined) {

@@ -1,4 +1,3 @@
-import promptAction from '@ohos.promptAction'
 import Api from '../net/Api'
 import UserService, { User } from '../service/UserService'
 import { LoadState, PageLoading } from '../widgets/PageLoading'
@@ -59,7 +58,8 @@ export struct Mine {
       Column() {
         TitleLayout({
           title: this.title,
-          isJustShowStatusBar: true
+          isJustShowStatusBar: true,
+          bgColor: Color.Transparent
         })
         Column() {
           Image($r("app.media.harmony_os"))
@@ -113,13 +113,12 @@ export struct Mine {
         .margin({ top: 50 })
         .alignItems(VerticalAlign.Center)
         .padding({ left: 16, right: 16 })
-        .backgroundColor($r("app.color.white"))
+        .backgroundColor($r("app.color.bg_overlay"))
         .onClick((e) => {
           UserService.get().checkLogin()
         })
 
-        Row()
-          .width('100%')
+        Divider()
           .height(0.5)
           .backgroundColor($r("app.color.divider"))
         Row() {
@@ -136,7 +135,7 @@ export struct Mine {
         .height(50)
         .alignItems(VerticalAlign.Center)
         .padding({ left: 16, right: 16 })
-        .backgroundColor($r("app.color.white"))
+        .backgroundColor($r("app.color.bg_overlay"))
         .onClick((event) => {
           UserService.get().checkLogin(() => {
             HRouter.with()
@@ -144,8 +143,8 @@ export struct Mine {
               .start()
           })
         })
-        Row()
-          .width('100%')
+
+        Divider()
           .height(0.5)
           .backgroundColor($r("app.color.divider"))
         Row() {
@@ -162,7 +161,7 @@ export struct Mine {
         .height(50)
         .alignItems(VerticalAlign.Center)
         .padding({ left: 16, right: 16 })
-        .backgroundColor($r("app.color.white"))
+        .backgroundColor($r("app.color.bg_overlay"))
         .onClick((event) => {
           UserService.get().checkLogin(() => {
             HRouter.with()
@@ -194,24 +193,24 @@ export struct Mine {
     }
   }
 
-  async logout() {
-    const res = await promptAction.showDialog({
+  logout() {
+    this.getUIContext().showAlertDialog({
       title: "提示",
       message: "确认退出登录？",
-      buttons: [
-        {
-          text: "确认",
-          color: $r("app.color.main")
-        },
-        {
-          text: "取消",
-          color: $r("app.color.text_h2")
+      primaryButton: {
+        value: "确认",
+        fontColor: $r("app.color.main"),
+        action: async () => {
+          await Api.get().logout();
+          UserService.get().clearUser();
         }
-      ]
+      },
+      secondaryButton: {
+        value: "取消",
+        fontColor: $r("app.color.text_h2"),
+        action: () => {
+        }
+      }
     })
-    if (res.index === 0) {
-      await Api.get().logout();
-      UserService.get().clearUser();
-    }
   }
 }

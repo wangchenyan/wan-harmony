@@ -15,7 +15,7 @@ struct SearchEntry {
   private keyword: string = ""
 
   async aboutToAppear() {
-    this.historyKeys = Preferences.get(getContext()).getSearchHistory()
+    this.historyKeys = Preferences.get(this.getUIContext().getHostContext()!).getSearchHistory()
     const res = await Api.get().getSearchHotKey()
     if (res.isSuccessWithData()) {
       this.hotKeys = res.getDataOrThrow();
@@ -27,6 +27,7 @@ struct SearchEntry {
       Row()
         .width('100%')
         .height(WindowUtils.statusBarHeight + 'px')
+        .backgroundColor($r('app.color.title_bar_bg'))
       Row() {
         Image($r("app.media.ic_back"))
           .width(48)
@@ -64,6 +65,7 @@ struct SearchEntry {
       .width('100%')
       .height(48)
       .alignItems(VerticalAlign.Center)
+      .backgroundColor($r('app.color.title_bar_bg'))
 
       Column() {
         Text("热门搜索")
@@ -165,7 +167,7 @@ struct SearchEntry {
     }
     historyKeys.unshift(this.keyword);
     this.historyKeys = historyKeys;
-    Preferences.get(getContext()).putSearchHistory(historyKeys);
+    Preferences.get(this.getUIContext().getHostContext()!).putSearchHistory(historyKeys);
     HRouter.with()
       .url(Routes.SearchResult)
       .params('keyword', this.keyword)
@@ -177,7 +179,7 @@ struct SearchEntry {
     historyKeys = historyKeys.concat(this.historyKeys)
     historyKeys.splice(index, 1);
     this.historyKeys = historyKeys;
-    Preferences.get(getContext()).putSearchHistory(historyKeys);
+    Preferences.get(this.getUIContext().getHostContext()!).putSearchHistory(historyKeys);
   }
 }
 
@@ -187,4 +189,5 @@ export function searchEntryNavDesBuilder(params: RouteParams) {
     SearchEntry()
   }
   .hideTitleBar(true)
+  .backgroundColor($r('app.color.bg'))
 }

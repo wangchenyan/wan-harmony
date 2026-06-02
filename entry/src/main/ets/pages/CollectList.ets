@@ -122,6 +122,7 @@ struct CollectList {
       startMargin: 16,
       endMargin: 16
     })
+    .backgroundColor($r('app.color.bg_overlay'))
     .edgeEffect(EdgeEffect.None) // 必须设置列表为滑动到边缘无效果
   }
 
@@ -161,4 +162,5 @@ export function collectListNavDesBuilder(params: RouteParams) {
     CollectList()
   }
   .hideTitleBar(true)
+  .backgroundColor($r('app.color.bg'))
 }
